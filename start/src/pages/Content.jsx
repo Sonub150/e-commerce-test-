@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 
 function Content() {
   return (
@@ -31,28 +30,21 @@ function Content() {
             { name: 'Fashion', icon: '👗', color: 'from-pink-500 to-rose-500' },
             { name: 'Home & Garden', icon: '🏠', color: 'from-green-500 to-emerald-500' },
             { name: 'Beauty', icon: '💄', color: 'from-purple-500 to-violet-500' },
-          ].map((category, index) => (
-            <motion.div
+          ].map((category) => (
+            <div
               key={category.name}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              whileHover={{ y: -5, scale: 1.02 }}
               className={`bg-gradient-to-br ${category.color} text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer`}
             >
               <div className="text-4xl mb-4">{category.icon}</div>
               <h3 className="text-xl font-semibold mb-2">{category.name}</h3>
               <p className="text-white/80 text-sm">Explore our collection</p>
-            </motion.div>
+            </div>
           ))}
         </div>
 
         {/* Content Sections */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
+          <div 
             className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow"
           >
             <h2 className="text-2xl font-bold text-gray-800 mb-4">New Arrivals</h2>
@@ -63,12 +55,9 @@ function Content() {
             <button className="text-blue-600 font-semibold hover:text-blue-700 transition-colors">
               View All New Arrivals →
             </button>
-          </motion.div>
+          </div>
 
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
+          <div 
             className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow"
           >
             <h2 className="text-2xl font-bold text-gray-800 mb-4">Special Offers</h2>
@@ -79,14 +68,11 @@ function Content() {
             <button className="text-blue-600 font-semibold hover:text-blue-700 transition-colors">
               View All Deals →
             </button>
-          </motion.div>
+          </div>
         </div>
 
         {/* Call to Action */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
+        <div 
           className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl p-8 text-center"
         >
           <h2 className="text-3xl font-bold mb-4">Join the Luxury Experience</h2>
@@ -96,7 +82,7 @@ function Content() {
           <button className="bg-white text-blue-600 px-8 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-all duration-300">
             Get Started Today
           </button>
-        </motion.div>
+        </div>
       </div>
     </main>
   );

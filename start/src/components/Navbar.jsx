@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FiSearch, 
@@ -18,17 +18,16 @@ import {
   FiTrendingUp
 } from 'react-icons/fi';
 import { Link, useNavigate } from 'react-router-dom';
+import { AppContext } from '../context/Appcontext';
 
 const Navbar = ({ onMenuToggle }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [cartItems] = useState(5);
-  const [wishlistItems] = useState(2);
   const [searchQuery, setSearchQuery] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
+  const { isLoggedIn, userData, setisLoggedIn, setUserData } = useContext(AppContext);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -209,15 +208,20 @@ const Navbar = ({ onMenuToggle }) => {
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
                   <FiUser size={18} className="text-white" />
                 </div>
+                {isLoggedIn && userData && (
+                  <span className="text-sm font-medium text-gray-700 hidden lg:block">
+                    {userData.firstName}
+                  </span>
+                )}
               </button>
               
               {isUserDropdownOpen && (
                 <div className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-xl py-3 z-30 text-gray-800">
-                  {isLoggedIn ? (
+                  {isLoggedIn && userData ? (
                     <>
                       <div className="px-4 py-4 border-b">
-                        <p className="font-semibold">Welcome back!</p>
-                        <p className="text-sm text-gray-600">user@example.com</p>
+                        <p className="font-semibold">Welcome back, {userData.firstName}!</p>
+                        <p className="text-sm text-gray-600">{userData.email}</p>
                       </div>
                       <Link to="/account" className="block px-4 py-3 hover:bg-gray-50">
                         My Account
@@ -236,7 +240,12 @@ const Navbar = ({ onMenuToggle }) => {
                           Help Center
                         </Link>
                         <button 
-                          onClick={() => setIsLoggedIn(false)}
+                          onClick={() => {
+                            setisLoggedIn(false);
+                            setUserData(null);
+                            setIsUserDropdownOpen(false);
+                            navigate('/');
+                          }}
                           className="w-full text-left px-4 py-3 hover:bg-gray-50 text-red-600"
                         >
                           Sign Out

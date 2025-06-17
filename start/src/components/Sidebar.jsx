@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { 
   FiHome, 
   FiShoppingBag, 
@@ -17,13 +17,16 @@ import {
   FiGrid,
   FiLayers
 } from 'react-icons/fi';
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
+import { AppContext } from '../context/Appcontext';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const [activeItem, setActiveItem] = useState('home');
   const [expandedCategory, setExpandedCategory] = useState(null);
   const navigate = useNavigate();
+  const { isLoggedIn, userData, setisLoggedIn, setUserData } = useContext(AppContext);
 
   // Prevent body scroll when sidebar is open
   useEffect(() => {
@@ -162,10 +165,36 @@ const Sidebar = ({ isOpen, onClose }) => {
                     <FiUser className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-800">Welcome back!</p>
-                    <p className="text-sm text-gray-600">Sign in to your account</p>
+                    {isLoggedIn && userData ? (
+                      <>
+                        <p className="font-semibold text-gray-800">Welcome back, {userData.firstName}!</p>
+                        <p className="text-sm text-gray-600">{userData.email}</p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="font-semibold text-gray-800">Welcome back!</p>
+                        <p className="text-sm text-gray-600">Sign in to your account</p>
+                      </>
+                    )}
                   </div>
                 </div>
+                {isLoggedIn && userData && (
+                  <motion.button
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    onClick={() => {
+                      setisLoggedIn(false);
+                      setUserData(null);
+                      onClose();
+                      navigate('/');
+                    }}
+                    className="mt-3 w-full bg-gradient-to-r from-red-500 to-pink-500 text-white py-2 px-4 rounded-lg text-sm font-medium hover:from-red-600 hover:to-pink-600 transition-all duration-300 flex items-center justify-center space-x-2"
+                  >
+                    <FiLogOut className="w-4 h-4" />
+                    <span>Sign Out</span>
+                  </motion.button>
+                )}
               </motion.div>
             </div>
 
