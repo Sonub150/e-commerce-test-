@@ -44,11 +44,14 @@ const Navbar = ({ onMenuToggle }) => {
   ];
 
   const categories = [
-    { name: 'Electronics', icon: '📱', subcategories: ['Phones', 'Laptops', 'Cameras'] },
-    { name: 'Fashion', icon: '👗', subcategories: ['Men', 'Women', 'Kids'] },
-    { name: 'Home', icon: '🏠', subcategories: ['Furniture', 'Decor', 'Kitchen'] },
-    { name: 'Beauty', icon: '💄', subcategories: ['Skincare', 'Makeup', 'Haircare'] },
-    { name: 'Sports', icon: '⚽', subcategories: ['Fitness', 'Outdoor', 'Team Sports'] },
+    { name: 'Fashion', icon: '👗', href: '/fashion' },
+    { name: 'Electronics', icon: '📱', href: '/electronics' },
+    { name: 'Phones', icon: '📞', href: '/phones' },
+    { name: 'Laptops', icon: '💻', href: '/laptops' },
+    { name: 'Shoes', icon: '👟', href: '/shoes' },
+    { name: 'Home Appliances', icon: '🏠', href: '/home-appliances' },
+    { name: 'Sports', icon: '⚽', href: '/sports' },
+    { name: 'Beauty', icon: '💄', href: '/beauty' },
   ];
 
   const handleSearch = (e) => {
@@ -117,7 +120,7 @@ const Navbar = ({ onMenuToggle }) => {
           </motion.div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-2">
+          <nav className="hidden lg:flex items-center space-x-4">
             {navLinks.map((link) => (
               <motion.div
                 key={link.name}
@@ -145,7 +148,7 @@ const Navbar = ({ onMenuToggle }) => {
               >
                 <span className="mr-2">📦</span>
                 Categories
-                <FiChevronDown className="ml-1" />
+                <FiChevronDown className={`ml-1 transition-transform duration-200 ${isCategoriesOpen ? 'rotate-180' : ''}`} />
               </button>
               
               <AnimatePresence>
@@ -154,19 +157,22 @@ const Navbar = ({ onMenuToggle }) => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 20 }}
-                    className="absolute left-0 mt-3 w-72 bg-white rounded-2xl shadow-xl py-3 z-30 text-gray-800"
+                    className="absolute left-0 mt-3 w-80 bg-white rounded-2xl shadow-xl py-3 z-30 text-gray-800 max-h-96 overflow-y-auto"
                   >
-                    {categories.map((category) => (
-                      <div key={category.name} className="group">
-                        <Link 
-                          to={`/category/${category.name.toLowerCase()}`}
-                          className="block px-4 py-3 hover:bg-gray-50 flex items-center"
-                        >
-                          <span className="text-2xl mr-3">{category.icon}</span>
-                          <span className="font-medium">{category.name}</span>
-                        </Link>
-                      </div>
-                    ))}
+                    <div className="grid grid-cols-1 gap-1">
+                      {categories.map((category) => (
+                        <div key={category.name} className="group">
+                          <Link 
+                            to={category.href}
+                            onClick={() => setIsCategoriesOpen(false)}
+                            className="block px-4 py-3 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 flex items-center transition-all duration-200"
+                          >
+                            <span className="text-2xl mr-3">{category.icon}</span>
+                            <span className="font-medium text-gray-700 group-hover:text-purple-600 transition-colors">{category.name}</span>
+                          </Link>
+                        </div>
+                      ))}
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -190,12 +196,12 @@ const Navbar = ({ onMenuToggle }) => {
             </div>
 
             {/* Wishlist */}
-            <button className="p-3 relative text-gray-700 hover:bg-white/50 rounded-full">
+            <button className="p-3 relative text-gray-700 hover:bg-white/50 rounded-full transition-all duration-200">
               <FiHeart size={22} />
             </button>
 
             {/* Cart */}
-            <button className="p-3 relative text-gray-700 hover:bg-white/50 rounded-full">
+            <button className="p-3 relative text-gray-700 hover:bg-white/50 rounded-full transition-all duration-200">
               <FiShoppingCart size={22} />
             </button>
 
@@ -203,7 +209,7 @@ const Navbar = ({ onMenuToggle }) => {
             <div className="relative hidden md:block">
               <button 
                 onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                className="flex items-center space-x-2 p-2 hover:bg-white/50 rounded-full"
+                className="flex items-center space-x-2 p-2 hover:bg-white/50 rounded-full transition-all duration-200"
               >
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
                   <FiUser size={18} className="text-white" />
@@ -215,69 +221,76 @@ const Navbar = ({ onMenuToggle }) => {
                 )}
               </button>
               
-              {isUserDropdownOpen && (
-                <div className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-xl py-3 z-30 text-gray-800">
-                  {isLoggedIn && userData ? (
-                    <>
-                      <div className="px-4 py-4 border-b">
-                        <p className="font-semibold">Welcome back, {userData.firstName}!</p>
-                        <p className="text-sm text-gray-600">{userData.email}</p>
-                      </div>
-                      <Link to="/account" className="block px-4 py-3 hover:bg-gray-50">
-                        My Account
-                      </Link>
-                      <Link to="/orders" className="block px-4 py-3 hover:bg-gray-50">
-                        My Orders
-                      </Link>
-                      <Link to="/wishlist" className="block px-4 py-3 hover:bg-gray-50">
-                        Wishlist
-                      </Link>
-                      <div className="border-t mt-1">
-                        <Link to="/settings" className="block px-4 py-3 hover:bg-gray-50">
-                          Settings
+              <AnimatePresence>
+                {isUserDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                    className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-xl py-3 z-30 text-gray-800"
+                  >
+                    {isLoggedIn && userData ? (
+                      <>
+                        <div className="px-4 py-4 border-b">
+                          <p className="font-semibold">Welcome back, {userData.firstName}!</p>
+                          <p className="text-sm text-gray-600">{userData.email}</p>
+                        </div>
+                        <Link to="/account" className="block px-4 py-3 hover:bg-gray-50 transition-colors">
+                          My Account
                         </Link>
-                        <Link to="/support" className="block px-4 py-3 hover:bg-gray-50">
-                          Help Center
+                        <Link to="/orders" className="block px-4 py-3 hover:bg-gray-50 transition-colors">
+                          My Orders
                         </Link>
-                        <button 
-                          onClick={() => {
-                            setisLoggedIn(false);
-                            setUserData(null);
-                            setIsUserDropdownOpen(false);
-                            navigate('/');
-                          }}
-                          className="w-full text-left px-4 py-3 hover:bg-gray-50 text-red-600"
-                        >
-                          Sign Out
-                        </button>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="px-4 py-4 border-b">
-                        <p className="font-semibold">Welcome Guest!</p>
-                        <p className="text-sm text-gray-600">Sign in to your account</p>
-                      </div>
-                      <Link to="/login" className="block px-4 py-3 hover:bg-gray-50">
-                        Sign In
-                      </Link>
-                      <Link to="/register" className="block px-4 py-3 hover:bg-gray-50">
-                        Create Account
-                      </Link>
-                      <div className="border-t mt-1">
-                        <Link to="/support" className="block px-4 py-3 hover:bg-gray-50">
-                          Help Center
+                        <Link to="/wishlist" className="block px-4 py-3 hover:bg-gray-50 transition-colors">
+                          Wishlist
                         </Link>
-                      </div>
-                    </>
-                  )}
-                </div>
-              )}
+                        <div className="border-t mt-1">
+                          <Link to="/settings" className="block px-4 py-3 hover:bg-gray-50 transition-colors">
+                            Settings
+                          </Link>
+                          <Link to="/support" className="block px-4 py-3 hover:bg-gray-50 transition-colors">
+                            Help Center
+                          </Link>
+                          <button 
+                            onClick={() => {
+                              setisLoggedIn(false);
+                              setUserData(null);
+                              setIsUserDropdownOpen(false);
+                              navigate('/');
+                            }}
+                            className="w-full text-left px-4 py-3 hover:bg-gray-50 text-red-600 transition-colors"
+                          >
+                            Sign Out
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="px-4 py-4 border-b">
+                          <p className="font-semibold">Welcome Guest!</p>
+                          <p className="text-sm text-gray-600">Sign in to your account</p>
+                        </div>
+                        <Link to="/login" className="block px-4 py-3 hover:bg-gray-50 transition-colors">
+                          Sign In
+                        </Link>
+                        <Link to="/register" className="block px-4 py-3 hover:bg-gray-50 transition-colors">
+                          Create Account
+                        </Link>
+                        <div className="border-t mt-1">
+                          <Link to="/support" className="block px-4 py-3 hover:bg-gray-50 transition-colors">
+                            Help Center
+                          </Link>
+                        </div>
+                      </>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Menu Button */}
             <button
-              className="p-3 text-gray-700 rounded-full"
+              className="p-3 text-gray-700 rounded-full hover:bg-white/50 transition-all duration-200"
               onClick={handleMenuToggle}
             >
               {isMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}

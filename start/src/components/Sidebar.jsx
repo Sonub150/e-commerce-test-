@@ -54,37 +54,52 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   const categories = [
     {
-      id: 'electronics',
-      name: 'Electronics',
-      icon: <FiGrid />,
-      subcategories: [
-        { name: 'Smartphones', href: '/category/electronics/smartphones' },
-        { name: 'Laptops', href: '/category/electronics/laptops' },
-        { name: 'Cameras', href: '/category/electronics/cameras' },
-        { name: 'Audio', href: '/category/electronics/audio' },
-      ]
-    },
-    {
       id: 'fashion',
       name: 'Fashion',
-      icon: <FiLayers />,
-      subcategories: [
-        { name: 'Men\'s Clothing', href: '/category/fashion/mens' },
-        { name: 'Women\'s Clothing', href: '/category/fashion/womens' },
-        { name: 'Accessories', href: '/category/fashion/accessories' },
-        { name: 'Footwear', href: '/category/fashion/footwear' },
-      ]
+      icon: '👗',
+      href: '/fashion'
     },
     {
-      id: 'home',
-      name: 'Home & Garden',
-      icon: <FiHome />,
-      subcategories: [
-        { name: 'Furniture', href: '/category/home/furniture' },
-        { name: 'Decor', href: '/category/home/decor' },
-        { name: 'Kitchen', href: '/category/home/kitchen' },
-        { name: 'Garden', href: '/category/home/garden' },
-      ]
+      id: 'electronics',
+      name: 'Electronics',
+      icon: '📱',
+      href: '/electronics'
+    },
+    {
+      id: 'phones',
+      name: 'Phones',
+      icon: '📞',
+      href: '/phones'
+    },
+    {
+      id: 'laptops',
+      name: 'Laptops',
+      icon: '💻',
+      href: '/laptops'
+    },
+    {
+      id: 'shoes',
+      name: 'Shoes',
+      icon: '👟',
+      href: '/shoes'
+    },
+    {
+      id: 'home-appliances',
+      name: 'Home Appliances',
+      icon: '🏠',
+      href: '/home-appliances'
+    },
+    {
+      id: 'sports',
+      name: 'Sports',
+      icon: '⚽',
+      href: '/sports'
+    },
+    {
+      id: 'beauty',
+      name: 'Beauty',
+      icon: '💄',
+      href: '/beauty'
     }
   ];
 
@@ -259,52 +274,25 @@ const Sidebar = ({ isOpen, onClose }) => {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: (index + menuItems.length) * 0.1 }}
+                      whileHover={{ x: 5 }}
                     >
-                      <button
-                        onClick={() => setExpandedCategory(expandedCategory === category.id ? null : category.id)}
-                        className="w-full flex items-center justify-between px-3 py-3 rounded-lg transition-all text-gray-700 hover:bg-gray-50 hover:text-gray-800"
+                      <Link
+                        to={category.href}
+                        onClick={onClose}
+                        className="flex items-center justify-between px-3 py-3 rounded-lg transition-all text-gray-700 hover:bg-gray-50 hover:text-gray-800 group"
                       >
                         <div className="flex items-center space-x-3">
-                          <span className="text-lg">{category.icon}</span>
+                          <span className="text-xl">{category.icon}</span>
                           <span className="font-medium">{category.name}</span>
                         </div>
                         <motion.div
-                          animate={{ rotate: expandedCategory === category.id ? 90 : 0 }}
-                          transition={{ duration: 0.2 }}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="text-gray-400 group-hover:text-gray-600 transition-colors"
                         >
                           <FiChevronRight className="w-4 h-4" />
                         </motion.div>
-                      </button>
-                      
-                      <AnimatePresence>
-                        {expandedCategory === category.id && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="overflow-hidden"
-                          >
-                            <div className="ml-8 space-y-1 mt-2">
-                              {category.subcategories.map((sub, subIndex) => (
-                                <motion.div
-                                  key={sub.name}
-                                  initial={{ opacity: 0, x: -10 }}
-                                  animate={{ opacity: 1, x: 0 }}
-                                  transition={{ delay: subIndex * 0.05 }}
-                                >
-                                  <Link
-                                    to={sub.href}
-                                    className="block px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-800 transition-all"
-                                  >
-                                    {sub.name}
-                                  </Link>
-                                </motion.div>
-                              ))}
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+                      </Link>
                     </motion.div>
                   ))}
                 </div>
