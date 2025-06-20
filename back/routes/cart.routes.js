@@ -19,4 +19,6 @@ router.delete('/item', cartController.removeCartItem);
 // DELETE /cart/clear - Clear the entire cart
 router.delete('/clear', cartController.clearCart);
 
+router.post('/merge',protect,cartController.mergeCart);
+
 module.exports = router;

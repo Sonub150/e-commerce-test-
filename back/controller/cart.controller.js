@@ -317,10 +317,111 @@ const clearCart = async (req, res) => {
   }
 };
 
+const mergeCart = async (req, res) => {
+  const { guestId } = req.body;
+  
+  try {
+    // Validate input
+    if (!guestId) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'Guest ID is required',
+        code: 'GUEST_ID_REQUIRED'
+      });
+    }
+
+    // Start transaction for atomic operations
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      // Get both carts in parallel for better performance
+      const [guestCart, userCart] = await Promise.all([
+        Cart.findOne({ guestId }).session(session),
+        Cart.findOne({ user: req.user._id }).session(session)
+      ]);
+
+      // Check if guest cart exists and has items
+      if (!guestCart || guestCart.cartItems.length === 0) {
+        await session.abortTransaction();
+        return res.status(400).json({
+          status: 'fail',
+          message: 'Guest cart is empty or not found',
+          code: 'EMPTY_GUEST_CART'
+        });
+      }
+
+      let mergedCart;
+      
+      if (userCart) {
+        // Merge guest cart items into user cart
+        for (const guestItem of guestCart.cartItems) {
+          const existingItemIndex = userCart.cartItems.findIndex(
+            userItem => userItem.productId.equals(guestItem.productId) &&
+                      userItem.size === guestItem.size &&
+                      userItem.color === guestItem.color
+          );
+
+          if (existingItemIndex > -1) {
+            // Update quantity if item exists
+            userCart.cartItems[existingItemIndex].quantity += guestItem.quantity;
+          } else {
+            // Add new item if it doesn't exist
+            userCart.cartItems.push(guestItem);
+          }
+        }
+
+        // Recalculate totals
+        await calculateCartTotals(userCart);
+        await userCart.save({ session });
+        mergedCart = userCart;
+
+        // Delete guest cart
+        await Cart.deleteOne({ _id: guestCart._id }).session(session);
+      } else {
+        // Convert guest cart to user cart
+        guestCart.user = req.user._id;
+        guestCart.guestId = undefined;
+        await guestCart.save({ session });
+        mergedCart = guestCart;
+      }
+
+      await session.commitTransaction();
+
+      res.status(200).json({
+        status: 'success',
+        message: 'Cart merged successfully',
+        data: {
+          cartItems: mergedCart.cartItems,
+          totalPrice: mergedCart.totalPrice,
+          totalQuantity: mergedCart.totalQuantity
+        }
+      });
+
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
+
+  } catch (error) {
+    console.error('Error merging carts:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to merge carts',
+      code: 'MERGE_CART_FAILED',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+
 module.exports = {
   getCart: getCartHandler,
   addToCart,
   updateCartItem,
   removeCartItem,
-  clearCart
+  clearCart,
+  mergeCart
 };
