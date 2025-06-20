@@ -1,4 +1,6 @@
 const jwt = require('jsonwebtoken');
+const User = require('../models/user.models');
+const Product = require('../models/productmodels');
 
 const userAuth = (req, res, next) => {
   // 1. Get token from HTTP-only cookie
@@ -48,4 +50,23 @@ const userAuth = (req, res, next) => {
   }
 };
 
-module.exports = userAuth;
+const admin = async (req, res, next) => {
+  try {
+    if (!req.userId) {
+      return res.status(401).json({ success: false, message: 'Not authenticated' });
+    }
+    const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    if (user.role !== 'admin') {
+      return res.status(403).json({ success: false, message: 'Not authorized as admin' });
+    }
+    req.user = user;
+    next();
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+module.exports = { protect: userAuth, admin };

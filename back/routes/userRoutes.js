@@ -1,8 +1,8 @@
 const express = require('express');
-const userRouter = express.Router();
-const userController = require('../controller/userController'); // ✅ Fix the missing import
-const userAuth = require('../middleware/userauth'); // adjust path if needed
+const router = express.Router();
+const userController = require('../controller/userController');
+const {protect} = require('../middleware/userauth');
 
-userRouter.get("/data", userAuth, userController.getUsersdata);
+router.get("/data", protect, userController.getUsersdata);
 
-module.exports = userRouter;
+module.exports = router;
