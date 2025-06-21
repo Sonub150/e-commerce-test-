@@ -414,17 +414,19 @@ function Login() {
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     
-    if (!validateRegisterForm()) return;
+    if (!validateRegisterForm()) {
+      return;
+    }
 
     setIsRegisterLoading(true);
-    
+    setRegisterErrors({});
+
     try {
-      // Prepare registration data - simplified structure
       const registrationData = {
         firstName: registerData.firstName,
         lastName: registerData.lastName,
         email: registerData.email,
-        mobNo: registerData.mobNo, // Changed back to mobNo to match schema
+        mobNo: registerData.mobNo,
         password: registerData.password,
         address: {
           addressLine1: registerData.address.addressLine1,
@@ -456,7 +458,8 @@ function Login() {
           withCredentials: true,
           headers: {
             'Content-Type': 'application/json'
-          }
+          },
+          timeout: 10000 // 10 second timeout
         });
         
         console.log('Raw response:', response);
@@ -464,6 +467,16 @@ function Login() {
         console.log('Response status:', response.status);
       } catch (firstError) {
         console.log('First endpoint failed, trying alternatives...');
+        console.log('First error details:', firstError);
+        
+        // Check if it's a CORS error
+        if (firstError.message && firstError.message.includes('CORS')) {
+          console.error('CORS Error detected! This means your backend is not configured to allow requests from this origin.');
+          console.error('Current origin:', window.location.origin);
+          console.error('Backend needs to allow CORS from:', window.location.origin);
+          toast.error('CORS Error: Backend not configured for this port. Please contact administrator.');
+          throw new Error('CORS configuration issue');
+        }
         
         // Try alternative endpoints
         const alternativeEndpoints = [
@@ -480,12 +493,16 @@ function Login() {
               withCredentials: true,
               headers: {
                 'Content-Type': 'application/json'
-              }
+              },
+              timeout: 10000
             });
             endpoint = altEndpoint;
             break;
           } catch (altError) {
             console.log(`Endpoint ${altEndpoint} failed:`, altError.message);
+            if (altError.message && altError.message.includes('CORS')) {
+              console.error('CORS Error on alternative endpoint:', altEndpoint);
+            }
             continue;
           }
         }
@@ -529,7 +546,14 @@ function Login() {
       // Provide more specific error messages
       let errorMessage = 'Registration failed. Please try again.';
       
-      if (error.response) {
+      if (error.message && error.message.includes('CORS')) {
+        errorMessage = 'CORS Error: Backend not configured for this port. Please ensure backend allows requests from this origin.';
+        console.error('CORS Error Details:', {
+          currentOrigin: window.location.origin,
+          backendUrl: backendUrl,
+          suggestion: 'Backend needs to allow CORS from: ' + window.location.origin
+        });
+      } else if (error.response) {
         if (error.response.status === 409) {
           errorMessage = 'User with this email already exists.';
         } else if (error.response.status === 400) {
@@ -555,6 +579,23 @@ function Login() {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
+      {/* Development Helper - Only show in development */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="fixed top-4 right-4 bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-2 rounded-lg shadow-lg z-50 max-w-sm">
+          <div className="text-sm font-semibold mb-1">🔧 Development Info</div>
+          <div className="text-xs space-y-1">
+            <div>Current Port: {window.location.port || '80'}</div>
+            <div>Origin: {window.location.origin}</div>
+            <div>Backend: {backendUrl}</div>
+            {window.location.port !== '5173' && (
+              <div className="text-red-600 font-semibold">
+                ⚠️ Port mismatch! Backend expects port 5173
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Animated Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900">
         <div className="absolute inset-0 opacity-20" style={{
