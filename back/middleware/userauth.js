@@ -3,8 +3,16 @@ const User = require('../models/user.models');
 const Product = require('../models/productmodels');
 
 const userAuth = (req, res, next) => {
-  // 1. Get token from HTTP-only cookie
-  const { token } = req.cookies;
+  // 1. Get token from HTTP-only cookie or Authorization header
+  let token = req.cookies.token;
+  
+  // If no token in cookies, check Authorization header
+  if (!token) {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7); // Remove 'Bearer ' prefix
+    }
+  }
 
   // 2. Check if token exists
   if (!token) {
@@ -59,7 +67,7 @@ const admin = async (req, res, next) => {
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
-    if (user.role !== 'admin') {
+    if (!user.isAdmin) {
       return res.status(403).json({ success: false, message: 'Not authorized as admin' });
     }
     req.user = user;

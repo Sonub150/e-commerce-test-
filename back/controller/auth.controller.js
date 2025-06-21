@@ -184,7 +184,8 @@ const login = async (req, res) => {
         email: user.email,
         mobNo: user.mobNo,
         address: user.address,
-        isVerified: user.isVerified
+        isVerified: user.isVerified,
+        isAdmin: user.isAdmin
       },
       token
     });
@@ -346,7 +347,25 @@ const verifyEmail = async (req, res) => {
 // ===============================
 const userAuthenticated = async (req, res) => {
   try {
-    res.status(200).json({ success: true, message: "User authenticated successfully" });
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    res.status(200).json({ 
+      success: true, 
+      message: "User authenticated successfully",
+      user: {
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        mobNo: user.mobNo,
+        address: user.address,
+        isVerified: user.isVerified,
+        isAdmin: user.isAdmin
+      }
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: "Authentication check failed" });
   }

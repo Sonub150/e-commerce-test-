@@ -1,13 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { FiArrowRight, FiShoppingBag, FiSmartphone, FiHome, FiHeart, FiZap } from 'react-icons/fi';
 
 const FeaturedCategories = () => {
-  const [clickedCategory, setClickedCategory] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-
   const categories = [
     {
       id: 1,
@@ -71,25 +67,6 @@ const FeaturedCategories = () => {
     }
   ];
 
-  const handleCategoryClick = async (category) => {
-    if (isLoading) return;
-    
-    setClickedCategory(category.id);
-    setIsLoading(true);
-    
-    // Add a small delay for better UX
-    await new Promise(resolve => setTimeout(resolve, 300));
-    
-    try {
-      navigate(category.route);
-    } catch (error) {
-      console.error('Navigation error:', error);
-    } finally {
-      setIsLoading(false);
-      setClickedCategory(null);
-    }
-  };
-
   return (
     <section className="py-16 bg-gradient-to-br from-gray-50 via-white to-blue-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -117,24 +94,8 @@ const FeaturedCategories = () => {
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              whileHover={{ y: -8 }}
-              whileTap={{ scale: 0.95 }}
-              className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform cursor-pointer"
-              onClick={() => handleCategoryClick(category)}
+              className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105"
             >
-              {/* Loading Overlay */}
-              {clickedCategory === category.id && isLoading && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="absolute inset-0 bg-black/50 backdrop-blur-sm z-20 flex items-center justify-center"
-                >
-                  <div className="bg-white rounded-full p-4">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                  </div>
-                </motion.div>
-              )}
-
               {/* Background Image */}
               <div className="relative h-64 overflow-hidden">
                 <img
@@ -150,18 +111,6 @@ const FeaturedCategories = () => {
                 <div className={`absolute top-4 left-4 bg-white/20 backdrop-blur-sm p-3 rounded-full ${category.textColor}`}>
                   {category.icon}
                 </div>
-
-                {/* Click Indicator */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ 
-                    opacity: clickedCategory === category.id ? 1 : 0,
-                    scale: clickedCategory === category.id ? 1 : 0
-                  }}
-                  className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm p-2 rounded-full"
-                >
-                  <FiArrowRight className="text-white w-5 h-5" />
-                </motion.div>
               </div>
 
               {/* Content */}
@@ -174,28 +123,17 @@ const FeaturedCategories = () => {
                 </p>
                 
                 {/* Action Button */}
-                <motion.div
+                <Link
+                  to={category.route}
                   className={`inline-flex items-center gap-2 bg-gradient-to-r ${category.color} text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 group-hover:translate-x-1`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
                 >
-                  <span>Shop {category.name}</span>
+                  Shop {category.name}
                   <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
-                </motion.div>
+                </Link>
               </div>
 
               {/* Hover Effect Overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-              {/* Ripple Effect */}
-              <motion.div
-                className="absolute inset-0 bg-white/20 rounded-full scale-0"
-                animate={{
-                  scale: clickedCategory === category.id ? 2 : 0,
-                  opacity: clickedCategory === category.id ? 0 : 1,
-                }}
-                transition={{ duration: 0.6 }}
-              />
             </motion.div>
           ))}
         </div>

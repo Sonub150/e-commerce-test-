@@ -15,8 +15,7 @@ import {
   FiChevronDown,
   FiStar,
   FiGift,
-  FiTrendingUp,
-  FiZap
+  FiTrendingUp
 } from 'react-icons/fi';
 import { Link, useNavigate } from 'react-router-dom';
 import { AppContext } from '../context/Appcontext';
@@ -28,7 +27,6 @@ const Navbar = ({ onMenuToggle }) => {
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const navigate = useNavigate();
   const { isLoggedIn, userData, setisLoggedIn, setUserData } = useContext(AppContext);
   const { cart } = useCart();
@@ -46,31 +44,27 @@ const Navbar = ({ onMenuToggle }) => {
 
   const navLinks = [
     { name: 'Home', href: '/', icon: <FiTrendingUp /> },
-    { name: 'New Arrivals', href: '/#new-arrivals', icon: <FiGift /> },
-    { name: 'Deals', href: '/#deals', icon: <FiStar /> },
-    { name: 'Special Offers', href: '/#special-offers', icon: <FiZap /> },
+    { name: 'New Arrivals', href: '/new-arrivals', icon: <FiGift /> },
+    { name: 'Deals', href: '/deals', icon: <FiStar /> },
   ];
 
   const categories = [
     { name: 'Fashion', icon: '👗', href: '/category/Fashion' },
-    { name: 'Electronics', icon: '📱', href: '/category/Electronics' },
-    { name: 'Smartphones', icon: '📞', href: '/category/Smartphones' },
-    { name: 'Laptops', icon: '💻', href: '/category/Laptops' },
-    { name: 'Footwear', icon: '👟', href: '/category/Footwear' },
-    { name: 'Home Appliances', icon: '🏠', href: '/category/Home Appliances' },
+    { name: 'Electronics', icon: '��', href: '/category/Electronics' },
+    { name: 'Phones', icon: '📞', href: '/category/Smartphones' },
+    { name: 'Laptops', icon: '��', href: '/category/Laptops' },
+    { name: 'Shoes', icon: '👟', href: '/category/Footwear' },
+    { name: 'Home & Garden', icon: '🏠', href: '/category/Home Appliances' },
     { name: 'Sports', icon: '⚽', href: '/category/Sports' },
-    { name: 'Beauty & Fashion', icon: '💄', href: '/category/Beauty & Fashion' },
-    { name: 'Gaming', icon: '🎮', href: '/category/Electronics' },
-    { name: 'Books', icon: '📚', href: '/category/Fashion' },
-    { name: 'Toys', icon: '🧸', href: '/category/Fashion' },
-    { name: 'Automotive', icon: '🚗', href: '/category/Electronics' }
+    { name: 'Beauty', icon: '💄', href: '/category/Beauty & Fashion' },
   ];
 
   const handleSearch = (e) => {
     e.preventDefault();
-    // Navigate to search results page with the query
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    // Search is now global, so just update searchQuery
+    // Optionally, navigate to /all-products if not already there
+    if (window.location.pathname !== '/all-products') {
+      navigate('/all-products');
     }
   };
 
@@ -79,25 +73,6 @@ const Navbar = ({ onMenuToggle }) => {
     setIsMenuOpen(newState);
     if (onMenuToggle) {
       onMenuToggle(newState);
-    }
-  };
-
-  const handleNavigation = (href) => {
-    if (href.startsWith('/#')) {
-      // Handle anchor links for smooth scrolling
-      const elementId = href.substring(2); // Remove '/#'
-      const element = document.getElementById(elementId);
-      if (element) {
-        const offset = 100; // Offset for fixed navbar
-        const elementPosition = element.offsetTop - offset;
-        window.scrollTo({
-          top: elementPosition,
-          behavior: 'smooth'
-        });
-      }
-    } else {
-      // Handle regular navigation
-      navigate(href);
     }
   };
 
@@ -163,15 +138,15 @@ const Navbar = ({ onMenuToggle }) => {
                 whileTap={{ scale: 0.95 }}
                 className="group"
               >
-                <button
-                  onClick={() => handleNavigation(link.href)}
+                <Link
+                  to={link.href}
                   className="navbar-link px-5 py-3 rounded-xl font-medium bg-transparent hover:bg-white/80 hover:shadow-lg transition-all duration-300 text-gray-700 cursor-pointer inline-flex items-center space-x-2"
                 >
                   <span className="text-lg group-hover:scale-110 transition-transform duration-300">
                     {link.icon}
                   </span>
                   <span className="group-hover:text-blue-600 transition-colors duration-300">{link.name}</span>
-                </button>
+                </Link>
               </motion.div>
             ))}
             
@@ -218,90 +193,20 @@ const Navbar = ({ onMenuToggle }) => {
           </nav>
 
           {/* Icons Group */}
-          <div className="flex items-center space-x-2 sm:space-x-4">
+          <div className="flex items-center space-x-4">
             {/* Responsive Search Bar */}
-            <div className="relative group flex-1 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg">
-              <div className="flex items-center bg-white/90 backdrop-blur-md rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:border-blue-300 group-focus-within:border-blue-500 group-focus-within:ring-2 group-focus-within:ring-blue-500/20">
-                <FiSearch className="text-gray-400 mr-2 sm:mr-3 text-base sm:text-lg group-focus-within:text-blue-500 transition-colors duration-300 flex-shrink-0" />
-                <form onSubmit={handleSearch} className="flex-1 min-w-0">
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
-                    onKeyDown={e => {
-                      // Prevent space key from triggering other actions
-                      if (e.key === ' ') {
-                        e.stopPropagation();
-                      }
-                    }}
-                    placeholder="Search..."
-                    className="bg-transparent border-none focus:outline-none w-full text-gray-700 placeholder-gray-400 text-sm font-medium"
-                  />
-                </form>
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="ml-1 sm:ml-2 p-1 rounded-full hover:bg-gray-100 transition-colors duration-200 flex-shrink-0"
-                  >
-                    <FiX className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 hover:text-gray-600" />
-                  </button>
-                )}
-              </div>
-              
-              {/* Search Suggestions Dropdown - Desktop Only */}
-              {searchQuery && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-200/50 z-50 overflow-hidden hidden md:block">
-                  <div className="p-3">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-medium text-gray-700">Quick Search</span>
-                      <button
-                        onClick={() => handleSearch({ preventDefault: () => {} })}
-                        className="text-xs text-blue-600 hover:text-blue-700 font-medium"
-                      >
-                        Search "{searchQuery}"
-                      </button>
-                    </div>
-                    <div className="space-y-1">
-                      <button
-                        onClick={() => {
-                          setSearchQuery(searchQuery + ' fashion');
-                          handleSearch({ preventDefault: () => {} });
-                        }}
-                        className="w-full text-left p-2 rounded-lg hover:bg-gray-50 transition-colors text-xs text-gray-600 hover:text-gray-800"
-                      >
-                        <span className="font-medium">{searchQuery}</span> in Fashion
-                      </button>
-                      <button
-                        onClick={() => {
-                          setSearchQuery(searchQuery + ' electronics');
-                          handleSearch({ preventDefault: () => {} });
-                        }}
-                        className="w-full text-left p-2 rounded-lg hover:bg-gray-50 transition-colors text-xs text-gray-600 hover:text-gray-800"
-                      >
-                        <span className="font-medium">{searchQuery}</span> in Electronics
-                      </button>
-                      <button
-                        onClick={() => {
-                          setSearchQuery(searchQuery + ' beauty');
-                          handleSearch({ preventDefault: () => {} });
-                        }}
-                        className="w-full text-left p-2 rounded-lg hover:bg-gray-50 transition-colors text-xs text-gray-600 hover:text-gray-800"
-                      >
-                        <span className="font-medium">{searchQuery}</span> in Beauty
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
+            <div className="flex items-center bg-white/80 backdrop-blur-sm rounded-full px-4 py-2.5 border border-gray-200/50 shadow-sm hover:shadow-md transition-all duration-300 w-40 sm:w-64 md:w-80 lg:w-96">
+              <FiSearch className="text-gray-500 mr-3 text-lg" />
+              <form onSubmit={handleSearch} className="flex-1">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  placeholder="Search products, brands, categories..."
+                  className="bg-transparent border-none focus:outline-none w-full px-1 text-gray-700 placeholder-gray-500 text-sm"
+                />
+              </form>
             </div>
-
-            {/* Mobile Search Button - Only show on very small screens */}
-            <button
-              onClick={() => setIsMobileSearchOpen(true)}
-              className="sm:hidden p-2 bg-white/80 backdrop-blur-sm rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200/50 flex-shrink-0"
-            >
-              <FiSearch className="text-gray-600 w-4 h-4" />
-            </button>
 
             {/* Wishlist Icon with Badge */}
             <div className="relative">
@@ -421,133 +326,6 @@ const Navbar = ({ onMenuToggle }) => {
           </div>
         </div>
       </div>
-
-      {/* Mobile Search Modal */}
-      <AnimatePresence>
-        {isMobileSearchOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-start justify-center pt-16 px-4"
-            onClick={() => setIsMobileSearchOpen(false)}
-          >
-            <motion.div
-              initial={{ opacity: 0, y: -20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -20, scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-4"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-gray-800">Search</h3>
-                <button
-                  onClick={() => setIsMobileSearchOpen(false)}
-                  className="p-1 rounded-full hover:bg-gray-100 transition-colors"
-                >
-                  <FiX className="w-5 h-5 text-gray-600" />
-                </button>
-              </div>
-
-              {/* Mobile Search Input */}
-              <div className="relative mb-4">
-                <div className="flex items-center bg-gray-50 rounded-xl px-3 py-3 border-2 border-gray-200 focus-within:border-blue-500 transition-colors">
-                  <FiSearch className="text-gray-400 mr-2 text-lg" />
-                  <form onSubmit={(e) => {
-                    handleSearch(e);
-                    setIsMobileSearchOpen(false);
-                  }} className="flex-1">
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={e => setSearchQuery(e.target.value)}
-                      onKeyDown={e => {
-                        // Prevent space key from triggering other actions
-                        if (e.key === ' ') {
-                          e.stopPropagation();
-                        }
-                      }}
-                      placeholder="Search products..."
-                      className="bg-transparent border-none focus:outline-none w-full text-gray-700 placeholder-gray-400 text-base font-medium"
-                      autoFocus
-                    />
-                  </form>
-                  {searchQuery && (
-                    <button
-                      onClick={() => setSearchQuery('')}
-                      className="ml-1 p-1 rounded-full hover:bg-gray-200 transition-colors"
-                    >
-                      <FiX className="w-4 h-4 text-gray-400" />
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* Quick Search Options */}
-              {searchQuery && (
-                <div className="space-y-2">
-                  <button
-                    onClick={() => {
-                      handleSearch({ preventDefault: () => {} });
-                      setIsMobileSearchOpen(false);
-                    }}
-                    className="w-full text-left p-3 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors border border-blue-200"
-                  >
-                    <div className="font-medium text-blue-800">Search "{searchQuery}"</div>
-                    <div className="text-xs text-blue-600">Search all products</div>
-                  </button>
-                  
-                  <div className="text-xs text-gray-500 mb-2">Search in categories:</div>
-                  
-                  <button
-                    onClick={() => {
-                      setSearchQuery(searchQuery + ' fashion');
-                      handleSearch({ preventDefault: () => {} });
-                      setIsMobileSearchOpen(false);
-                    }}
-                    className="w-full text-left p-2 rounded-lg hover:bg-gray-50 transition-colors text-sm"
-                  >
-                    <span className="font-medium">{searchQuery}</span> in Fashion
-                  </button>
-                  <button
-                    onClick={() => {
-                      setSearchQuery(searchQuery + ' electronics');
-                      handleSearch({ preventDefault: () => {} });
-                      setIsMobileSearchOpen(false);
-                    }}
-                    className="w-full text-left p-2 rounded-lg hover:bg-gray-50 transition-colors text-sm"
-                  >
-                    <span className="font-medium">{searchQuery}</span> in Electronics
-                  </button>
-                </div>
-              )}
-
-              {/* Popular Searches */}
-              {!searchQuery && (
-                <div>
-                  <div className="text-xs text-gray-500 mb-2">Popular searches:</div>
-                  <div className="flex flex-wrap gap-2">
-                    {['iPhone', 'Laptop', 'Shoes', 'Dress'].map((term) => (
-                      <button
-                        key={term}
-                        onClick={() => {
-                          setSearchQuery(term);
-                          handleSearch({ preventDefault: () => {} });
-                          setIsMobileSearchOpen(false);
-                        }}
-                        className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 transition-colors"
-                      >
-                        {term}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </header>
   );
 };

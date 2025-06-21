@@ -1,20 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiArrowRight, FiHeart, FiStar, FiShoppingCart, FiEye, FiGift, FiClock, FiZap, FiX } from 'react-icons/fi';
-import { useNavigate } from 'react-router-dom';
+import { FiArrowRight, FiHeart, FiStar, FiShoppingCart, FiEye, FiGift, FiClock, FiZap } from 'react-icons/fi';
 import axios from 'axios';
-import { useWishlist } from '../context/Appcontext';
 
 const SpecialOffersSlider = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const navigate = useNavigate();
-  const { wishlist, setWishlist } = useWishlist();
 
   useEffect(() => {
     setLoading(true);
@@ -34,37 +27,18 @@ const SpecialOffersSlider = () => {
 
   // Auto-scroll every 4 seconds
   useEffect(() => {
-    if (products.length === 0 || isHovered) return;
+    if (products.length === 0) return;
     
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % Math.ceil(products.length / 4));
     }, 4000);
 
     return () => clearInterval(interval);
-  }, [products.length, isHovered]);
+  }, [products.length]);
 
-  if (loading) return (
-    <div className="py-16 bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading special offers...</p>
-        </div>
-      </div>
-    </div>
-  );
-  
-  if (error) return (
-    <div className="py-16 bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <p className="text-red-600">{error}</p>
-        </div>
-      </div>
-    </div>
-  );
-  
-  if (!Array.isArray(products) || products.length === 0) return null;
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
+  if (!Array.isArray(products) || products.length === 0) return <div>No products found</div>;
 
   const nextSlide = () => {
     setCurrentIndex((prev) => (prev + 1) % Math.ceil(products.length / 4));
@@ -74,46 +48,25 @@ const SpecialOffersSlider = () => {
     setCurrentIndex((prev) => (prev - 1 + Math.ceil(products.length / 4)) % Math.ceil(products.length / 4));
   };
 
-  // Enhanced click functions
-  const handleProductClick = (product) => {
-    setSelectedProduct(product);
-    setShowModal(true);
+  const addToCart = (productId) => {
+    console.log(`Added product ${productId} to cart`);
+    // Add to cart functionality
   };
 
-  const handleQuickView = (product) => {
-    navigate(`/category/${product.category}?product=${product._id}`);
+  const addToWishlist = (productId) => {
+    console.log(`Added product ${productId} to wishlist`);
+    // Add to wishlist functionality
   };
 
-  const handleAddToCart = (product) => {
-    console.log(`Added product ${product._id} to cart`);
-    // Add to cart functionality - integrate with your cart context
-  };
-
-  const handleAddToWishlist = (product) => {
-    setWishlist(prev => 
-      prev.includes(product._id) 
-        ? prev.filter(id => id !== product._id)
-        : [...prev, product._id]
-    );
-  };
-
-  const handleCategoryClick = (category) => {
-    navigate(`/category/${category}`);
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
-    setSelectedProduct(null);
+  const quickView = (productId) => {
+    console.log(`Quick view product ${productId}`);
+    // Quick view functionality
   };
 
   const visibleProducts = products.slice(currentIndex * 4, (currentIndex * 4) + 4);
 
   return (
-    <div 
-      className="py-16 bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 relative overflow-hidden"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
+    <div className="py-16 bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 relative overflow-hidden">
       {/* Background Decorations */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-0 left-0 w-80 h-80 bg-gradient-to-br from-red-400/20 to-orange-400/20 rounded-full blur-3xl"></div>
@@ -203,8 +156,7 @@ const SpecialOffersSlider = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden cursor-pointer"
-                  onClick={() => handleProductClick(product)}
+                  className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden"
                 >
                   {/* Product Image */}
                   <div className="relative overflow-hidden">
@@ -221,10 +173,9 @@ const SpecialOffersSlider = () => {
                         whileTap={{ scale: 0.9 }}
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleAddToWishlist(product);
+                          addToWishlist(product._id);
                         }}
                         className="bg-white/90 backdrop-blur-sm p-3 rounded-full shadow-lg hover:bg-white transition-all duration-300 cursor-pointer"
-                        title="Add to Wishlist"
                       >
                         <FiHeart className="w-4 h-4 text-gray-600" />
                       </motion.button>
@@ -234,10 +185,9 @@ const SpecialOffersSlider = () => {
                         whileTap={{ scale: 0.9 }}
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleQuickView(product);
+                          quickView(product._id);
                         }}
                         className="bg-white/90 backdrop-blur-sm p-3 rounded-full shadow-lg hover:bg-white transition-all duration-300 cursor-pointer"
-                        title="Quick View"
                       >
                         <FiEye className="w-4 h-4 text-gray-600" />
                       </motion.button>
@@ -247,10 +197,9 @@ const SpecialOffersSlider = () => {
                         whileTap={{ scale: 0.9 }}
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleAddToCart(product);
+                          addToCart(product._id);
                         }}
                         className="bg-white/90 backdrop-blur-sm p-3 rounded-full shadow-lg hover:bg-white transition-all duration-300 cursor-pointer"
-                        title="Add to Cart"
                       >
                         <FiShoppingCart className="w-4 h-4 text-gray-600" />
                       </motion.button>
@@ -296,7 +245,7 @@ const SpecialOffersSlider = () => {
                       whileTap={{ scale: 0.98 }}
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleAddToCart(product);
+                        addToCart(product._id);
                       }}
                       className="w-full bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white py-3 px-4 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer"
                     >
@@ -314,101 +263,12 @@ const SpecialOffersSlider = () => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => navigate('/category/Footwear')}
             className="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
           >
             View All Special Offers
           </motion.button>
         </div>
       </div>
-
-      {/* Product Modal */}
-      <AnimatePresence>
-        {showModal && selectedProduct && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={closeModal}
-          >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <h2 className="text-2xl font-bold text-gray-900">{selectedProduct.name}</h2>
-                  <button
-                    onClick={closeModal}
-                    className="text-gray-500 hover:text-gray-700 transition-colors"
-                  >
-                    <FiX className="w-6 h-6" />
-                  </button>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <img
-                      src={selectedProduct.images?.[0]?.url || "https://via.placeholder.com/400x400"}
-                      alt={selectedProduct.name}
-                      className="w-full h-64 object-cover rounded-lg"
-                    />
-                  </div>
-                  
-                  <div>
-                    <p className="text-gray-600 mb-4">{selectedProduct.description}</p>
-                    
-                    <div className="flex items-center gap-3 mb-4">
-                      <span className="text-2xl font-bold text-gray-900">
-                        ${selectedProduct.discountPrice || selectedProduct.price}
-                      </span>
-                      {selectedProduct.discountPrice && (
-                        <span className="text-lg text-gray-400 line-through">
-                          ${selectedProduct.price}
-                        </span>
-                      )}
-                    </div>
-                    
-                    <div className="flex gap-2 mb-4">
-                      <button
-                        onClick={() => {
-                          handleAddToCart(selectedProduct);
-                          closeModal();
-                        }}
-                        className="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors"
-                      >
-                        Add to Cart
-                      </button>
-                      <button
-                        onClick={() => {
-                          handleAddToWishlist(selectedProduct);
-                        }}
-                        className="bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors"
-                      >
-                        <FiHeart className="w-4 h-4" />
-                      </button>
-                    </div>
-                    
-                    <button
-                      onClick={() => {
-                        handleQuickView(selectedProduct);
-                        closeModal();
-                      }}
-                      className="w-full bg-gradient-to-r from-orange-600 to-red-600 text-white py-2 px-4 rounded-lg hover:from-orange-700 hover:to-red-700 transition-all duration-300"
-                    >
-                      View Full Details
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };

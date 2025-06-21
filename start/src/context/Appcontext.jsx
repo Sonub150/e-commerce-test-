@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 export const AppContext = createContext();
 export const useAppContext = () => useContext(AppContext);
@@ -15,18 +15,8 @@ export const AppContextProvider = ({ children }) => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL
   const [isLoggedIn, setisLoggedIn] = useState(false);
   const [userData, setUserData] = useState(null);
-  
-  // Wishlist state with localStorage persistence
-  const [wishlist, setWishlist] = useState(() => {
-    const savedWishlist = localStorage.getItem('wishlist');
-    return savedWishlist ? JSON.parse(savedWishlist) : [];
-  });
-
-  // Save wishlist to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem('wishlist', JSON.stringify(wishlist));
-  }, [wishlist]);
-
+  // Wishlist state
+  const [wishlist, setWishlist] = useState([]);
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
 

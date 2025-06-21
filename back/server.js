@@ -8,6 +8,8 @@ const userRoutes = require('./routes/userRoutes');
 const productRoutes = require('./routes/productroutes');
 const cartRoutes = require('./routes/cart.routes');
 const authRoutes = require('./routes/routes');
+const couponRoutes = require('./routes/couponRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -28,6 +30,13 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
+app.use('/api/coupons', couponRoutes);
+app.use('/api/admin', adminRoutes);
+
+// Test endpoint to verify backend connectivity
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'Backend is reachable!' });
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {

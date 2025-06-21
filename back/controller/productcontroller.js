@@ -385,13 +385,26 @@ const simpleProduct = async (req, res) => {
 
 const newArrivals = async (req, res) => {
   try {
+    const limit = parseInt(req.query.limit) || 8; // Default to 8 products, support limit parameter
+    
     const products = await Product.find()
       .sort({ createdAt: -1 })
-      .limit(4);
+      .limit(limit);
+
+    if (!products || products.length === 0) {
+      return res.status(404).json({
+        status: 'fail',
+        message: 'No new arrivals found',
+        data: {
+          products: []
+        }
+      });
+    }
 
     res.status(200).json({
       status: 'success',
       results: products.length,
+      limit,
       data: {
         products
       }

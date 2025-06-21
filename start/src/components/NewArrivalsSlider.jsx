@@ -1,20 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
-import { FiArrowRight, FiArrowLeft, FiStar, FiClock, FiTrendingUp, FiZap, FiShoppingCart, FiHeart, FiEye, FiX } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
+import { FiArrowRight, FiArrowLeft, FiStar, FiClock, FiTrendingUp, FiZap } from 'react-icons/fi';
 import axios from 'axios';
-import { useWishlist } from '../context/Appcontext';
 
 const NewArrivalsSlider = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [error, setError] = useState(null);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const navigate = useNavigate();
-  const { wishlist, setWishlist } = useWishlist();
 
   useEffect(() => {
     const fetchNewArrivals = async () => {
@@ -46,50 +40,6 @@ const NewArrivalsSlider = () => {
     );
   };
 
-  // Enhanced click functions
-  const handleProductClick = (product) => {
-    setSelectedProduct(product);
-    setShowModal(true);
-  };
-
-  const handleQuickView = (product) => {
-    navigate(`/category/${product.category}?product=${product._id}`);
-  };
-
-  const handleAddToCart = (product) => {
-    // Add to cart functionality
-    console.log('Adding to cart:', product.name);
-    // You can integrate with your cart context here
-  };
-
-  const handleAddToWishlist = (product) => {
-    setWishlist(prev => 
-      prev.includes(product._id) 
-        ? prev.filter(id => id !== product._id)
-        : [...prev, product._id]
-    );
-  };
-
-  const handleCategoryClick = (category) => {
-    navigate(`/category/${category}`);
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
-    setSelectedProduct(null);
-  };
-
-  // Auto-scroll functionality
-  useEffect(() => {
-    if (products.length === 0 || isHovered) return;
-    
-    const interval = setInterval(() => {
-      nextSlide();
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, [products.length, isHovered]);
-
   if (loading) {
     return (
       <section className="py-16 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
@@ -108,11 +58,7 @@ const NewArrivalsSlider = () => {
   }
 
   return (
-    <section 
-      className="py-16 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 relative overflow-hidden"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
+    <section className="py-16 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 relative overflow-hidden">
       {/* Background Decorative Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
@@ -178,8 +124,7 @@ const NewArrivalsSlider = () => {
                       <img
                         src={product.images?.[0]?.url || product.images?.[0] || product.image || "https://via.placeholder.com/300x300?text=New+Arrival"}
                         alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 cursor-pointer"
-                        onClick={() => handleProductClick(product)}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
                       
                       {/* New Arrival Badge */}
@@ -195,48 +140,21 @@ const NewArrivalsSlider = () => {
                         </div>
                       )}
 
-                      {/* Quick Action Buttons */}
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleQuickView(product);
-                          }}
-                          className="bg-white text-gray-800 p-2 rounded-full hover:bg-gray-100 transition-colors transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300"
-                          title="Quick View"
+                      {/* Quick View Overlay */}
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <Link
+                          to={`/category/${product.category}`}
+                          className="bg-white text-gray-800 px-6 py-2 rounded-full font-semibold hover:bg-gray-100 transition-colors transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300"
                         >
-                          <FiEye className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleAddToCart(product);
-                          }}
-                          className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300"
-                          title="Add to Cart"
-                        >
-                          <FiShoppingCart className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleAddToWishlist(product);
-                          }}
-                          className="bg-red-600 text-white p-2 rounded-full hover:bg-red-700 transition-colors transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300"
-                          title="Add to Wishlist"
-                        >
-                          <FiHeart className="w-4 h-4" />
-                        </button>
+                          Quick View
+                        </Link>
                       </div>
                     </div>
 
                     {/* Product Info */}
                     <div className="p-6">
                       <div className="mb-3">
-                        <h3 
-                          className="font-bold text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors cursor-pointer"
-                          onClick={() => handleProductClick(product)}
-                        >
+                        <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
                           {product.name}
                         </h3>
                         <p className="text-gray-600 text-sm line-clamp-2 mb-3">
@@ -280,18 +198,14 @@ const NewArrivalsSlider = () => {
 
                       {/* Action Buttons */}
                       <div className="flex gap-2">
-                        <button
-                          onClick={() => handleProductClick(product)}
+                        <Link
+                          to={`/category/${product.category}`}
                           className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 px-4 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 text-center font-semibold text-sm"
                         >
                           View Details
-                        </button>
-                        <button 
-                          onClick={() => handleAddToWishlist(product)}
-                          className="bg-gray-100 text-gray-700 py-2 px-3 rounded-lg hover:bg-gray-200 transition-colors"
-                          title="Add to Wishlist"
-                        >
-                          <FiHeart className="w-4 h-4" />
+                        </Link>
+                        <button className="bg-gray-100 text-gray-700 py-2 px-3 rounded-lg hover:bg-gray-200 transition-colors">
+                          <FiStar className="w-4 h-4" />
                         </button>
                       </div>
 
@@ -326,107 +240,7 @@ const NewArrivalsSlider = () => {
             ))}
           </div>
         </div>
-
-        {/* View All Button */}
-        <div className="text-center mt-12">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => navigate('/category/Fashion')}
-            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
-          >
-            View All New Arrivals
-          </motion.button>
-        </div>
       </div>
-
-      {/* Product Modal */}
-      <AnimatePresence>
-        {showModal && selectedProduct && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={closeModal}
-          >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <h2 className="text-2xl font-bold text-gray-900">{selectedProduct.name}</h2>
-                  <button
-                    onClick={closeModal}
-                    className="text-gray-500 hover:text-gray-700 transition-colors"
-                  >
-                    <FiX className="w-6 h-6" />
-                  </button>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <img
-                      src={selectedProduct.images?.[0]?.url || selectedProduct.images?.[0] || selectedProduct.image || "https://via.placeholder.com/400x400"}
-                      alt={selectedProduct.name}
-                      className="w-full h-64 object-cover rounded-lg"
-                    />
-                  </div>
-                  
-                  <div>
-                    <p className="text-gray-600 mb-4">{selectedProduct.description}</p>
-                    
-                    <div className="flex items-center gap-3 mb-4">
-                      <span className="text-2xl font-bold text-gray-900">
-                        ${selectedProduct.discountPrice || selectedProduct.price}
-                      </span>
-                      {selectedProduct.discountPrice && (
-                        <span className="text-lg text-gray-400 line-through">
-                          ${selectedProduct.price}
-                        </span>
-                      )}
-                    </div>
-                    
-                    <div className="flex gap-2 mb-4">
-                      <button
-                        onClick={() => {
-                          handleAddToCart(selectedProduct);
-                          closeModal();
-                        }}
-                        className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-                      >
-                        Add to Cart
-                      </button>
-                      <button
-                        onClick={() => {
-                          handleAddToWishlist(selectedProduct);
-                        }}
-                        className="bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors"
-                      >
-                        <FiHeart className="w-4 h-4" />
-                      </button>
-                    </div>
-                    
-                    <button
-                      onClick={() => {
-                        handleQuickView(selectedProduct);
-                        closeModal();
-                      }}
-                      className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 px-4 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300"
-                    >
-                      View Full Details
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </section>
   );
 };

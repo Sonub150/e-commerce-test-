@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { FiStar, FiClock, FiTag, FiArrowRight, FiGift, FiTrendingUp, FiZap } from 'react-icons/fi';
 
 const SpecialDeals = () => {
   const [currentDeal, setCurrentDeal] = useState(0);
-  const [clickedDeal, setClickedDeal] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
 
   const deals = [
     {
@@ -64,25 +61,6 @@ const SpecialDeals = () => {
     return () => clearInterval(timer);
   }, [deals.length]);
 
-  const handleDealClick = async (deal) => {
-    if (isLoading) return;
-    
-    setClickedDeal(deal.id);
-    setIsLoading(true);
-    
-    // Add a small delay for better UX
-    await new Promise(resolve => setTimeout(resolve, 300));
-    
-    try {
-      navigate(deal.link);
-    } catch (error) {
-      console.error('Navigation error:', error);
-    } finally {
-      setIsLoading(false);
-      setClickedDeal(null);
-    }
-  };
-
   return (
     <section className="py-16 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -119,26 +97,10 @@ const SpecialDeals = () => {
                   initial={{ opacity: 0, y: 50 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
-                  whileHover={{ y: -5 }}
-                  whileTap={{ scale: 0.95 }}
-                  className={`relative overflow-hidden rounded-2xl shadow-2xl transform transition-all duration-500 cursor-pointer ${
+                  className={`relative overflow-hidden rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-500 ${
                     index === currentDeal ? 'ring-4 ring-yellow-400' : ''
                   }`}
-                  onClick={() => handleDealClick(deal)}
                 >
-                  {/* Loading Overlay */}
-                  {clickedDeal === deal.id && isLoading && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="absolute inset-0 bg-black/50 backdrop-blur-sm z-20 flex items-center justify-center"
-                    >
-                      <div className="bg-white rounded-full p-4">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                      </div>
-                    </motion.div>
-                  )}
-
                   {/* Background Gradient */}
                   <div className={`absolute inset-0 bg-gradient-to-br ${deal.bgGradient} opacity-90`} />
                   
@@ -208,14 +170,13 @@ const SpecialDeals = () => {
                     </div>
 
                     {/* Action Button */}
-                    <motion.div
+                    <Link
+                      to={deal.link}
                       className={`inline-flex items-center justify-center gap-2 bg-white/20 backdrop-blur-sm ${deal.textColor} px-6 py-3 rounded-xl font-semibold hover:bg-white/30 transition-all duration-300 group`}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
                     >
-                      <span>Shop Now</span>
+                      Shop Now
                       <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
-                    </motion.div>
+                    </Link>
                   </div>
 
                   {/* Decorative Elements */}
@@ -230,28 +191,6 @@ const SpecialDeals = () => {
                       <FiTag className="text-white text-lg" />
                     </div>
                   </div>
-
-                  {/* Click Indicator */}
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0 }}
-                    animate={{ 
-                      opacity: clickedDeal === deal.id ? 1 : 0,
-                      scale: clickedDeal === deal.id ? 1 : 0
-                    }}
-                    className="absolute top-4 left-4 bg-white/20 backdrop-blur-sm p-2 rounded-full"
-                  >
-                    <FiArrowRight className="text-white w-4 h-4" />
-                  </motion.div>
-
-                  {/* Ripple Effect */}
-                  <motion.div
-                    className="absolute inset-0 bg-white/20 rounded-full scale-0"
-                    animate={{
-                      scale: clickedDeal === deal.id ? 2 : 0,
-                      opacity: clickedDeal === deal.id ? 0 : 1,
-                    }}
-                    transition={{ duration: 0.6 }}
-                  />
                 </motion.div>
               ))}
             </motion.div>
@@ -260,12 +199,10 @@ const SpecialDeals = () => {
           {/* Navigation Dots */}
           <div className="flex justify-center mt-8 gap-2">
             {deals.map((_, index) => (
-              <motion.button
+              <button
                 key={index}
                 onClick={() => setCurrentDeal(index)}
-                whileHover={{ scale: 1.2 }}
-                whileTap={{ scale: 0.8 }}
-                className={`w-3 h-3 rounded-full transition-all duration-300 cursor-pointer ${
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
                   index === currentDeal 
                     ? 'bg-gradient-to-r from-red-500 to-purple-500 scale-125' 
                     : 'bg-gray-300 hover:bg-gray-400'
@@ -295,13 +232,9 @@ const SpecialDeals = () => {
                 placeholder="Enter your email"
                 className="px-6 py-3 rounded-lg text-gray-800 w-full sm:w-80 focus:outline-none focus:ring-2 focus:ring-white/50"
               />
-              <motion.button 
-                className="bg-white text-green-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
+              <button className="bg-white text-green-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
                 Subscribe & Save
-              </motion.button>
+              </button>
             </div>
           </div>
         </motion.div>

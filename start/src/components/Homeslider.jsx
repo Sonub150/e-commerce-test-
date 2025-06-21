@@ -186,11 +186,6 @@ const HomeSlider = () => {
   // Keyboard navigation
   useEffect(() => {
     const handleKeyPress = (event) => {
-      // Don't handle keyboard events if user is typing in an input field
-      if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
-        return;
-      }
-
       switch (event.key) {
         case 'ArrowLeft':
           prevSlide();

@@ -71,6 +71,11 @@ const userSchema = new mongoose.Schema({
   resetOtpExpire: {
     type: Date,
     default: null
+  },
+  // Admin role field - determines if user has admin privileges
+  isAdmin: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true

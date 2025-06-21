@@ -1,24 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { useWishlist } from '../context/Appcontext';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import axios from 'axios';
 import ProductModal from '../components/ProductModal';
-import { FiSearch, FiStar, FiHeart, FiShoppingCart, FiFilter, FiGrid, FiList, FiX } from 'react-icons/fi';
 
 const CategoryProducts = () => {
   const { categoryName } = useParams();
   const { addToCart } = useCart();
-  const { wishlist, setWishlist } = useWishlist();
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-  // Search state
-  const [searchQuery, setSearchQuery] = useState('');
   
   // Filter and sort states
   const [sortBy, setSortBy] = useState('newest');
@@ -30,6 +24,7 @@ const CategoryProducts = () => {
   
   // UI states
   const [showFilters, setShowFilters] = useState(false);
+  const [wishlist, setWishlist] = useState([]);
   const [imageErrors, setImageErrors] = useState({});
   const [showCartPopup, setShowCartPopup] = useState(false);
   const [addedProduct, setAddedProduct] = useState(null);
@@ -55,19 +50,9 @@ const CategoryProducts = () => {
       });
   }, [categoryName]);
 
-  // Apply filters, sorting, and search
+  // Apply filters and sorting
   useEffect(() => {
     let filtered = [...products];
-
-    // Search filter
-    if (searchQuery.trim()) {
-      const searchTerm = searchQuery.toLowerCase();
-      filtered = filtered.filter(product => 
-        product.name?.toLowerCase().includes(searchTerm) ||
-        product.description?.toLowerCase().includes(searchTerm) ||
-        product.brand?.toLowerCase().includes(searchTerm)
-      );
-    }
 
     // Price range filter
     if (priceRange.min || priceRange.max) {
@@ -109,7 +94,7 @@ const CategoryProducts = () => {
 
     setFilteredProducts(filtered);
     setCurrentPage(1);
-  }, [products, searchQuery, sortBy, priceRange, selectedBrands]);
+  }, [products, sortBy, priceRange, selectedBrands]);
 
   // Get unique brands
   const brands = [...new Set(products.map(product => product.brand).filter(Boolean))];
@@ -135,6 +120,15 @@ const CategoryProducts = () => {
       setShowCartPopup(false);
       setAddedProduct(null);
     }, 3000);
+  };
+
+  // Handle wishlist
+  const toggleWishlist = (productId) => {
+    setWishlist(prev => 
+      prev.includes(productId) 
+        ? prev.filter(id => id !== productId)
+        : [...prev, productId]
+    );
   };
 
   // Handle image error
@@ -163,19 +157,9 @@ const CategoryProducts = () => {
 
   // Clear all filters
   const clearFilters = () => {
-    setSearchQuery('');
     setSortBy('newest');
     setPriceRange({ min: '', max: '' });
     setSelectedBrands([]);
-  };
-
-  // Handle wishlist
-  const toggleWishlist = (productId) => {
-    setWishlist(prev => 
-      prev.includes(productId) 
-        ? prev.filter(id => id !== productId)
-        : [...prev, productId]
-    );
   };
 
   if (loading) {
@@ -252,20 +236,6 @@ const CategoryProducts = () => {
               <p className="text-gray-600 mt-2 text-lg">
                 {filteredProducts.length} amazing products found
               </p>
-            </div>
-            
-            {/* Search Bar */}
-            <div className="mt-6 md:mt-0 md:ml-6">
-              <div className="flex items-center bg-white/80 backdrop-blur-sm rounded-full shadow-lg border border-gray-200/50 px-4 py-2">
-                <FiSearch className="text-gray-500 mr-3" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={`Search in ${categoryName}...`}
-                  className="bg-transparent border-none focus:outline-none w-full text-gray-700 placeholder-gray-500"
-                />
-              </div>
             </div>
             
             {/* View Mode Toggle */}
