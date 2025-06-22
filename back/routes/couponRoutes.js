@@ -86,8 +86,8 @@ router.post('/validate', async (req, res) => {
   try {
     const { code, orderAmount = 0 } = req.body;
     
-    // Find the coupon by its code
-    const coupon = await Coupon.findOne({ code });
+    // Find the coupon by its code (case-insensitive)
+    const coupon = await Coupon.findOne({ code: { $regex: new RegExp(`^${code}$`, 'i') } });
 
     // Check if coupon exists
     if (!coupon) {
@@ -173,8 +173,8 @@ router.post('/apply', async (req, res) => {
   try {
     const { code, orderAmount = 0 } = req.body;
     
-    // Find the coupon by its code
-    const coupon = await Coupon.findOne({ code });
+    // Find the coupon by its code (case-insensitive)
+    const coupon = await Coupon.findOne({ code: { $regex: new RegExp(`^${code}$`, 'i') } });
 
     // Check if coupon exists
     if (!coupon) {
