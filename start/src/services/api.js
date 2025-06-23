@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: 'http://localhost:8080/api',
+  baseURL: 'https://e-commerce-test-2-f4t8.onrender.com/api',
   withCredentials: true,
   timeout: 5000, // 5 second timeout
   headers: {

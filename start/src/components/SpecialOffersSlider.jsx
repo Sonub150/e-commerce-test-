@@ -11,7 +11,7 @@ const SpecialOffersSlider = () => {
 
   useEffect(() => {
     setLoading(true);
-    axios.get('http://localhost:8080/api/products?category=Footwear')
+    axios.get('https://e-commerce-test-2-f4t8.onrender.com/api/products?category=Footwear')
       .then(res => {
         // Ensure we get an array from the response
         const productData = Array.isArray(res.data) ? res.data : (res.data.products || []);

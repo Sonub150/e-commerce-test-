@@ -20,7 +20,7 @@ export const CartProvider = ({ children }) => {
 
   // Fetch cart from backend on mount and when guestId changes
   useEffect(() => {
-    axios.get("http://localhost:8080/api/cart", {
+    axios.get("https://e-commerce-test-2-f4t8.onrender.com/api/cart", {
       params: { guestId },
       withCredentials: true,
     })
@@ -31,7 +31,7 @@ export const CartProvider = ({ children }) => {
   const addToCart = async (product) => {
     try {
       const res = await axios.post(
-        "http://localhost:8080/api/cart/add",
+        "https://e-commerce-test-2-f4t8.onrender.com/api/cart/add",
         { productId: product._id, quantity: 1, guestId },
         { withCredentials: true }
       );
@@ -43,7 +43,7 @@ export const CartProvider = ({ children }) => {
 
   const removeFromCart = async (productId) => {
     try {
-      const res = await axios.delete("http://localhost:8080/api/cart/item", {
+      const res = await axios.delete("https://e-commerce-test-2-f4t8.onrender.com/api/cart/item", {
         data: { productId, guestId },
         withCredentials: true,
       });
@@ -57,7 +57,7 @@ export const CartProvider = ({ children }) => {
   const updateCartItem = async (productId, quantity) => {
     try {
       const res = await axios.put(
-        "http://localhost:8080/api/cart",
+        "https://e-commerce-test-2-f4t8.onrender.com/api/cart",
         { productId, quantity, guestId },
         { withCredentials: true }
       );
@@ -71,7 +71,7 @@ export const CartProvider = ({ children }) => {
   const clearCart = async () => {
     try {
       const res = await axios.delete(
-        "http://localhost:8080/api/cart/clear",
+        "https://e-commerce-test-2-f4t8.onrender.com/api/cart/clear",
         {
           data: { guestId },
           withCredentials: true,

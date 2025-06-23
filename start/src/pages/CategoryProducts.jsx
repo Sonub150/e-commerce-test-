@@ -36,7 +36,7 @@ const CategoryProducts = () => {
     setError(null);
     setCurrentPage(1);
     
-    axios.get(`http://localhost:8080/api/products?category=${encodeURIComponent(categoryName)}`)
+    axios.get(`https://e-commerce-test-2-f4t8.onrender.com/api/products?category=${encodeURIComponent(categoryName)}`)
       .then(res => {
         const productsData = res.data.data?.products || [];
         setProducts(productsData);
