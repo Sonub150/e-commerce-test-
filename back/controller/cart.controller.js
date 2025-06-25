@@ -4,7 +4,7 @@ const Product = require('../models/productmodels');
 // Helper function to get cart
 const getCart = async (userId, guestId) => {
   const query = userId ? { user: userId } : { guestId };
-  return await Cart.findOne(query).populate('cartItems.productId', 'name price images countInStock');
+  return await Cart.findOne(query).populate('cartItems.productId', 'name price discountPrice images countInStock category brand description rating numReviews');
 };
 
 const getCartHandler = async (req, res) => {
@@ -121,10 +121,13 @@ const addToCart = async (req, res) => {
     await calculateCartTotals(cart);
     await cart.save();
     
+    // Get the populated cart before sending response
+    const populatedCart = await getCart(userId, guestId);
+    
     res.status(200).json({
       status: 'success',
-      guestId: cart.guestId,
-      data: cart
+      guestId: populatedCart.guestId,
+      data: populatedCart
     });
 
   } catch (error) {
@@ -198,9 +201,12 @@ const updateCartItem = async (req, res) => {
     await calculateCartTotals(cart);
     await cart.save();
 
+    // Get the populated cart before sending response
+    const populatedCart = await getCart(req.user?._id, guestId);
+
     res.status(200).json({
       status: 'success',
-      data: cart
+      data: populatedCart
     });
 
   } catch (error) {
@@ -270,9 +276,12 @@ const removeCartItem = async (req, res) => {
     await calculateCartTotals(cart);
     await cart.save();
 
+    // Get the populated cart before sending response
+    const populatedCart = await getCart(userId, guestId);
+
     res.status(200).json({
       status: 'success',
-      data: cart,
+      data: populatedCart,
     });
   } catch (error) {
     console.error('Error removing cart item:', error);
@@ -302,10 +311,13 @@ const clearCart = async (req, res) => {
     await calculateCartTotals(cart);
     await cart.save();
 
+    // Get the populated cart before sending response
+    const populatedCart = await getCart(userId, guestId);
+
     res.status(200).json({
       status: 'success',
       message: 'Cart cleared',
-      data: cart,
+      data: populatedCart,
     });
   } catch (error) {
     console.error('Error clearing cart:', error);

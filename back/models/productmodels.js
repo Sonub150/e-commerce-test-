@@ -24,7 +24,8 @@ const productSchema = new mongoose.Schema({
       required: true
     },
     altText: {
-      type: String
+      type: String,
+      default: ''
     }
   }],
   rating: {
@@ -44,40 +45,46 @@ const productSchema = new mongoose.Schema({
     comment: String
   }],
   discountPrice: {
-    type: Number
+    type: Number,
+    default: 0
   },
   countInStock: {
     type: Number,
     required: true,
     default: 0
   },
-   sku: {
+  sku: {
     type: String,
     required: true,
     unique: true,
     index: true
   },
   brand: {
-    type: String
+    type: String,
+    required: true
   },
   sizes: {
     type: [String],
     required: function() {
       return this.category === 'clothing';
-    }
+    },
+    default: undefined
   },
   colors: {
     type: [String],
     required: function() {
       return this.category === 'clothing';
-    }
+    },
+    default: undefined
   },
   collectionName: {
-    type: String
+    type: String,
+    default: ''
   },
   gender: {
     type: String,
-    enum: ['male', 'female', 'unisex']
+    enum: ['male', 'female', 'unisex'],
+    default: 'unisex'
   },
   tags: {
     type: [String],
