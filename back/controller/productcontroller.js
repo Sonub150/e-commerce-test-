@@ -266,13 +266,11 @@ const queryFilter = async (req, res) => {
       .sort(sort) // Apply sorting
       .limit(Number(limit) || 0); // Convert limit to number or default to 0 (no limit)
 
-    // Return successful response
+    // Return successful response with products at top level for frontend compatibility
     res.json({
+      products,
       status: 'success',
-      results: products.length,
-      data: {
-        products
-      }
+      results: products.length
     });
 
   } catch (error) {

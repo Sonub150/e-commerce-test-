@@ -19,6 +19,9 @@ import AdminAnalytics from './admin/pages/Analytics';
 import AdminSettings from './admin/pages/Settings';
 import AdminLogin from './admin/pages/AdminLogin';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
+import Address from './pages/Address';
+import OrderSuccess from './pages/OrderSuccess';
+import APITest from './components/APITest';
 
 function App() {
   const { adminUser } = useAdminAuth();
@@ -37,6 +40,9 @@ function App() {
           <Route path='/category/:categoryName' element={<CategoryProducts />} />
           <Route path='/wishlist' element={<Wishlist />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/address" element={<Address />} />
+          <Route path="/order-success" element={<OrderSuccess />} />
+          <Route path="/api-test" element={<APITest />} />
 
           {/* Admin Panel Routes */}
           <Route path='/admin/login' element={<AdminLogin />} />

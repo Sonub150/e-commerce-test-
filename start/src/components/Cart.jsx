@@ -405,7 +405,10 @@ const Cart = () => {
               </div>
               
               <div className="space-y-3">
-                <button className="w-full bg-gradient-to-r from-indigo-600 to-pink-500 hover:from-indigo-700 hover:to-pink-600 text-white py-3 rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-300">
+                <button 
+                  className="w-full bg-gradient-to-r from-indigo-600 to-pink-500 hover:from-indigo-700 hover:to-pink-600 text-white py-3 rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+                  onClick={() => navigate('/address')}
+                >
                   Proceed to Checkout
                 </button>
                 <button

@@ -10,6 +10,8 @@ const cartRoutes = require('./routes/cart.routes');
 const authRoutes = require('./routes/routes');
 const couponRoutes = require('./routes/couponRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const checkoutRoutes = require('./routes/checkout.routes');
+const orderRoutes = require('./routes/order.routes');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -45,6 +47,8 @@ app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/checkout', checkoutRoutes);
+app.use('/api/orders', orderRoutes);
 
 // Test endpoint to verify backend connectivity
 app.get('/api/test', (req, res) => {
