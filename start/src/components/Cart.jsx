@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
 import { Link, useNavigate } from "react-router-dom";
 import { FiTrash2, FiPlus, FiMinus, FiShoppingBag, FiTag, FiArrowRight, FiEye, FiGift, FiX, FiCheck } from "react-icons/fi";
@@ -15,6 +15,28 @@ const Cart = () => {
   const [couponError, setCouponError] = useState("");
   const [couponSuccess, setCouponSuccess] = useState("");
   const navigate = useNavigate();
+
+  // Fetch all available products for validation and matching
+  const [availableProducts, setAvailableProducts] = useState([]);
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const res = await fetch('https://e-commerce-test-2-f4t8.onrender.com/api/products');
+        const data = await res.json();
+        const products = data.products || [];
+        setAvailableProducts(products);
+      } catch (err) {
+        setAvailableProducts([]);
+      }
+    }
+    fetchProducts();
+  }, []);
+
+  // Check for invalid cart items (define this BEFORE any useEffect that uses it)
+  const hasInvalidCartItems = cart?.cartItems?.some(item => {
+    const productId = typeof item.productId === 'object' ? item.productId._id : item.productId;
+    return !availableProducts.some(p => p._id === productId);
+  });
 
   // Calculate subtotal
   const subtotal = cart && cart.cartItems
@@ -146,6 +168,29 @@ const Cart = () => {
             )}
           </div>
           
+          {/* Warning for invalid cart items */}
+          {hasInvalidCartItems && (
+            <div className="mb-4 p-4 bg-red-100 border border-red-300 rounded-lg flex items-center justify-between">
+              <span className="text-red-700 font-semibold">Your cart contains products that are no longer available. Please reset your cart.</span>
+              <button
+                onClick={() => { clearCart(); window.location.reload(); }}
+                className="ml-4 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold shadow-md transition-all duration-300"
+              >
+                Force Reset Cart
+              </button>
+            </div>
+          )}
+          
+          {/* Force Reset Cart Button (always available) */}
+          <div className="mb-4 flex justify-end">
+            <button
+              onClick={() => { clearCart(); window.location.reload(); }}
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold shadow-md transition-all duration-300"
+            >
+              Force Reset Cart
+            </button>
+          </div>
+          
           {(!cart || !cart.cartItems || cart.cartItems.length === 0) ? (
             <motion.div 
               initial={{ opacity: 0 }}
@@ -165,104 +210,121 @@ const Cart = () => {
                   Continue Shopping
                 </Link>
                 <Link 
-                  to="/category/Fashion" 
+                  to="/category/Footwear" 
                   className="inline-block bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white px-8 py-3 rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-300"
                 >
-                  Browse Fashion
+                  Browse Footwear
                 </Link>
               </div>
             </motion.div>
           ) : (
             <ul className="space-y-4">
               <AnimatePresence>
-                {cart.cartItems.map(item => (
-                  <motion.li 
-                    key={item.productId._id}
-                    variants={itemVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                    className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-100 overflow-hidden"
-                  >
-                    <div className="flex flex-col sm:flex-row gap-4 p-4">
-                      <div className="relative w-full sm:w-32 h-32 flex-shrink-0">
-                        <img 
-                          src={item.productId.images?.[0]?.url} 
-                          alt={item.productId.name} 
-                          className="w-full h-full object-cover rounded-lg border-2 border-indigo-100 shadow-sm"
-                        />
-                        <div className="absolute top-2 right-2 bg-white/80 backdrop-blur-sm rounded-full p-1 shadow-sm">
-                          <button
-                            onClick={() => removeFromCart(item.productId._id)}
-                            className="text-gray-500 hover:text-red-500 transition-colors p-1"
-                            title="Remove"
-                            disabled={loadingId === item.productId._id}
-                          >
-                            <FiTrash2 size={16} />
-                          </button>
+                {cart.cartItems.map((item, idx) => {
+                  let product = item.productId;
+                  let isValid = product && typeof product === 'object' && product._id;
+                  // If not valid by id, try to match by name
+                  if (!isValid && product && product.name) {
+                    const matchByName = availableProducts.find(p => p.name === product.name);
+                    if (matchByName) {
+                      product = matchByName;
+                      isValid = true;
+                    }
+                  }
+                  return (
+                    <motion.li 
+                      key={isValid ? product._id : item._id || idx}
+                      variants={itemVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-100 overflow-hidden"
+                    >
+                      <div className="flex flex-col sm:flex-row gap-4 p-4">
+                        <div className="relative w-full sm:w-32 h-32 flex-shrink-0">
+                          {isValid ? (
+                            <img 
+                              src={product.images?.[0]?.url} 
+                              alt={product.name} 
+                              className="w-full h-full object-cover rounded-lg border-2 border-indigo-100 shadow-sm"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-gray-100 text-red-500 font-bold text-center rounded-lg border-2 border-red-200">
+                              Product not found or removed from database.
+                            </div>
+                          )}
+                          {isValid && (
+                            <div className="absolute top-2 right-2 bg-white/80 backdrop-blur-sm rounded-full p-1 shadow-sm">
+                              <button
+                                onClick={() => removeFromCart(product._id)}
+                                className="text-gray-500 hover:text-red-500 transition-colors p-1"
+                                title="Remove"
+                                disabled={loadingId === product._id}
+                              >
+                                <FiTrash2 size={16} />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-4">
+                          <div className="flex-1 min-w-0">
+                            {isValid ? (
+                              <Link 
+                                to={`/category/${product.category}`}
+                                className="font-semibold text-lg text-indigo-700 hover:underline mb-1 line-clamp-2 block transition-colors duration-200"
+                              >
+                                {product.name}
+                              </Link>
+                            ) : null}
+                            {isValid && (
+                              <div className="flex flex-wrap gap-2 mb-2">
+                                <span className="bg-indigo-50 text-indigo-600 text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1">
+                                  <FiTag className="inline-block" /> {product.brand}
+                                </span>
+                                <span className="bg-pink-50 text-pink-600 text-xs font-medium px-2 py-1 rounded-full">
+                                  {product.category}
+                                </span>
+                              </div>
+                            )}
+                            {isValid && (
+                              <p className="text-indigo-600 font-medium text-base mb-3">
+                                ${product.price.toFixed(2)}
+                              </p>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-1">
+                              <button
+                                onClick={() => handleDecrease(item)}
+                                className={`text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 w-8 h-8 flex items-center justify-center rounded-full transition-colors ${item.quantity === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                disabled={item.quantity === 1 || loadingId === product._id}
+                              >
+                                <FiMinus size={14} />
+                              </button>
+                              <span className="font-semibold text-gray-800 w-6 text-center">
+                                {loadingId === product._id ? (
+                                  <span className="inline-block w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></span>
+                                ) : (
+                                  item.quantity
+                                )}
+                              </span>
+                              <button
+                                onClick={() => handleIncrease(item)}
+                                className="text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 w-8 h-8 flex items-center justify-center rounded-full transition-colors"
+                                disabled={loadingId === product._id}
+                              >
+                                <FiPlus size={14} />
+                              </button>
+                            </div>
+                            <div className="font-bold text-lg text-gray-900 w-20 text-right">
+                              ${(product.price * item.quantity).toFixed(2)}
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-4">
-                        <div className="flex-1 min-w-0">
-                          <Link 
-                            to={`/category/${item.productId.category}`}
-                            className="font-semibold text-lg text-indigo-700 hover:underline mb-1 line-clamp-2 block transition-colors duration-200"
-                          >
-                            {item.productId.name}
-                          </Link>
-                          <div className="flex flex-wrap gap-2 mb-2">
-                            <span className="bg-indigo-50 text-indigo-600 text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1">
-                              <FiTag className="inline-block" /> {item.productId.brand}
-                            </span>
-                            <span className="bg-pink-50 text-pink-600 text-xs font-medium px-2 py-1 rounded-full">
-                              {item.productId.category}
-                            </span>
-                          </div>
-                          <p className="text-indigo-600 font-medium text-base mb-3">
-                            ${item.productId.price.toFixed(2)}
-                          </p>
-                          {/* Navigation to product category */}
-                          <button
-                            onClick={() => navigateToProductCategory(item.productId.category)}
-                            className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors duration-200 hover:underline"
-                          >
-                            <FiEye size={14} />
-                            View More {item.productId.category} Products
-                            <FiArrowRight size={12} />
-                          </button>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-1">
-                            <button
-                              onClick={() => handleDecrease(item)}
-                              className={`text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 w-8 h-8 flex items-center justify-center rounded-full transition-colors ${item.quantity === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
-                              disabled={item.quantity === 1 || loadingId === item.productId._id}
-                            >
-                              <FiMinus size={14} />
-                            </button>
-                            <span className="font-semibold text-gray-800 w-6 text-center">
-                              {loadingId === item.productId._id ? (
-                                <span className="inline-block w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></span>
-                              ) : (
-                                item.quantity
-                              )}
-                            </span>
-                            <button
-                              onClick={() => handleIncrease(item)}
-                              className="text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 w-8 h-8 flex items-center justify-center rounded-full transition-colors"
-                              disabled={loadingId === item.productId._id}
-                            >
-                              <FiPlus size={14} />
-                            </button>
-                          </div>
-                          <div className="font-bold text-lg text-gray-900 w-20 text-right">
-                            ${(item.productId.price * item.quantity).toFixed(2)}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.li>
-                ))}
+                    </motion.li>
+                  );
+                })}
               </AnimatePresence>
             </ul>
           )}
@@ -425,22 +487,22 @@ const Cart = () => {
                 <h4 className="text-sm font-semibold text-gray-700 mb-3">Continue Shopping</h4>
                 <div className="grid grid-cols-2 gap-2">
                   <Link 
-                    to="/category/Fashion"
+                    to="/category/Footwear"
                     className="text-xs bg-pink-50 text-pink-700 px-3 py-2 rounded-lg hover:bg-pink-100 transition-colors text-center"
                   >
-                    Fashion
+                    Footwear
                   </Link>
                   <Link 
-                    to="/category/Electronics"
+                    to="/category/Smartphones"
                     className="text-xs bg-blue-50 text-blue-700 px-3 py-2 rounded-lg hover:bg-blue-100 transition-colors text-center"
                   >
-                    Electronics
+                    Smartphones
                   </Link>
                   <Link 
-                    to="/category/Footwear"
+                    to="/category/Laptops"
                     className="text-xs bg-green-50 text-green-700 px-3 py-2 rounded-lg hover:bg-green-100 transition-colors text-center"
                   >
-                    Shoes
+                    Laptops
                   </Link>
                   <Link 
                     to="/category/Home Appliances"

@@ -17,7 +17,7 @@ const Wishlist = () => {
   useEffect(() => {
     axios.get('http://localhost:8080/api/products')
       .then(res => {
-        setProducts(res.data.data.products || []);
+        setProducts(res.data.products || []);
       })
       .catch(() => setProducts([]));
   }, []);

@@ -54,20 +54,14 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   const categories = [
     {
-      id: 'fashion',
-      name: 'Fashion',
-      icon: '👗',
-      href: '/category/Fashion'
+      id: 'footwear',
+      name: 'Footwear',
+      icon: '👟',
+      href: '/category/Footwear'
     },
     {
-      id: 'electronics',
-      name: 'Electronics',
-      icon: '📱',
-      href: '/category/Electronics'
-    },
-    {
-      id: 'phones',
-      name: 'Phones',
+      id: 'smartphones',
+      name: 'Smartphones',
       icon: '📞',
       href: '/category/Smartphones'
     },
@@ -78,26 +72,14 @@ const Sidebar = ({ isOpen, onClose }) => {
       href: '/category/Laptops'
     },
     {
-      id: 'shoes',
-      name: 'Shoes',
-      icon: '👟',
-      href: '/category/Footwear'
-    },
-    {
       id: 'home-appliances',
-      name: 'Home & Garden',
+      name: 'Home Appliances',
       icon: '🏠',
       href: '/category/Home Appliances'
     },
     {
-      id: 'sports',
-      name: 'Sports',
-      icon: '⚽',
-      href: '/category/Sports'
-    },
-    {
-      id: 'beauty',
-      name: 'Beauty',
+      id: 'beauty-fashion',
+      name: 'Beauty & Fashion',
       icon: '💄',
       href: '/category/Beauty & Fashion'
     }

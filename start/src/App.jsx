@@ -6,6 +6,7 @@ import ResetPassword from './pages/ResetPassword';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AppContextProvider } from './context/Appcontext';
+import { CartProvider } from './context/CartContext';
 import { AdminAuthProvider, useAdminAuth } from './context/AdminAuthContext';
 import Cart from "./components/Cart";
 import Wishlist from './pages/Wishlist';
@@ -28,50 +29,52 @@ function App() {
 
   return (
     <AppContextProvider>
-      <div>
-        <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/register' element={<Login />} />
-          <Route path='/reset-password' element={<ResetPassword />} />
-          <Route path='/email-verify' element={<EmailVerify />} />
-          
-          {/* Category Pages */}
-          <Route path='/category/:categoryName' element={<CategoryProducts />} />
-          <Route path='/wishlist' element={<Wishlist />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/address" element={<Address />} />
-          <Route path="/order-success" element={<OrderSuccess />} />
-          <Route path="/api-test" element={<APITest />} />
+      <CartProvider>
+        <div>
+          <Routes>
+            <Route path='/' element={<Home />} />
+            <Route path='/login' element={<Login />} />
+            <Route path='/register' element={<Login />} />
+            <Route path='/reset-password' element={<ResetPassword />} />
+            <Route path='/email-verify' element={<EmailVerify />} />
+            
+            {/* Category Pages */}
+            <Route path='/category/:categoryName' element={<CategoryProducts />} />
+            <Route path='/wishlist' element={<Wishlist />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/address" element={<Address />} />
+            <Route path="/order-success" element={<OrderSuccess />} />
+            <Route path="/api-test" element={<APITest />} />
 
-          {/* Admin Panel Routes */}
-          <Route path='/admin/login' element={<AdminLogin />} />
-          <Route path='/admin' element={
-            <AdminProtectedRoute>
-              <AdminLayout />
-            </AdminProtectedRoute>
-          }>
-            <Route index element={<AdminDashboard />} />
-            <Route path='coupons' element={<AdminCoupons />} />
-            <Route path='users' element={<AdminUsers />} />
-            <Route path='products' element={<AdminProducts />} />
-            <Route path='analytics' element={<AdminAnalytics />} />
-            <Route path='settings' element={<AdminSettings />} />
-          </Route>
-        </Routes>
-        
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-        />
-      </div>
+            {/* Admin Panel Routes */}
+            <Route path='/admin/login' element={<AdminLogin />} />
+            <Route path='/admin' element={
+              <AdminProtectedRoute>
+                <AdminLayout />
+              </AdminProtectedRoute>
+            }>
+              <Route index element={<AdminDashboard />} />
+              <Route path='coupons' element={<AdminCoupons />} />
+              <Route path='users' element={<AdminUsers />} />
+              <Route path='products' element={<AdminProducts />} />
+              <Route path='analytics' element={<AdminAnalytics />} />
+              <Route path='settings' element={<AdminSettings />} />
+            </Route>
+          </Routes>
+          
+          <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
+        </div>
+      </CartProvider>
     </AppContextProvider>
   );
 }

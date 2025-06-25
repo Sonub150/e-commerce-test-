@@ -7,28 +7,38 @@ const FeaturedCategories = () => {
   const categories = [
     {
       id: 1,
-      name: "Fashion",
-      description: "Trendy clothing and accessories",
+      name: "Footwear",
+      description: "Stylish shoes for every occasion",
       icon: <FiShoppingBag className="text-4xl" />,
-      image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-      color: "from-pink-500 to-rose-500",
-      textColor: "text-pink-600",
-      route: "/category/Fashion"
+      image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2012&q=80",
+      color: "from-teal-500 to-cyan-500",
+      textColor: "text-teal-600",
+      route: "/category/Footwear"
     },
     {
       id: 2,
-      name: "Electronics",
-      description: "Latest gadgets and devices",
+      name: "Smartphones",
+      description: "Latest mobile devices and phones",
       icon: <FiSmartphone className="text-4xl" />,
       image: "https://images.unsplash.com/photo-1498049794561-7780e7231661?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
       color: "from-blue-500 to-indigo-500",
       textColor: "text-blue-600",
-      route: "/category/Electronics"
+      route: "/category/Smartphones"
     },
     {
       id: 3,
+      name: "Laptops",
+      description: "High-performance computing devices",
+      icon: <FiSmartphone className="text-4xl" />,
+      image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      color: "from-purple-500 to-violet-500",
+      textColor: "text-purple-600",
+      route: "/category/Laptops"
+    },
+    {
+      id: 4,
       name: "Home Appliances",
-      description: "Furniture and home decor",
+      description: "Essential appliances for your home",
       icon: <FiHome className="text-4xl" />,
       image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
       color: "from-green-500 to-emerald-500",
@@ -36,34 +46,14 @@ const FeaturedCategories = () => {
       route: "/category/Home Appliances"
     },
     {
-      id: 4,
+      id: 5,
       name: "Beauty & Fashion",
-      description: "Cosmetics and personal care",
+      description: "Cosmetics and personal care products",
       icon: <FiHeart className="text-4xl" />,
       image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2080&q=80",
-      color: "from-purple-500 to-pink-500",
-      textColor: "text-purple-600",
+      color: "from-pink-500 to-rose-500",
+      textColor: "text-pink-600",
       route: "/category/Beauty & Fashion"
-    },
-    {
-      id: 5,
-      name: "Sports",
-      description: "Athletic gear and equipment",
-      icon: <FiZap className="text-4xl" />,
-      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-      color: "from-orange-500 to-red-500",
-      textColor: "text-orange-600",
-      route: "/category/Sports"
-    },
-    {
-      id: 6,
-      name: "Footwear",
-      description: "Shoes for every occasion",
-      icon: <FiShoppingBag className="text-4xl" />,
-      image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2012&q=80",
-      color: "from-teal-500 to-cyan-500",
-      textColor: "text-teal-600",
-      route: "/category/Footwear"
     }
   ];
 

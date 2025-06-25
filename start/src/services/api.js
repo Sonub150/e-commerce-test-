@@ -5,7 +5,7 @@ function getBackendUrl() {
   return (
     import.meta.env.VITE_BACKEND_URL ||
     process.env.VITE_BACKEND_URL ||
-    'https://e-commerce-test-2-f4t8.onrender.com'
+    'http://localhost:8080'
   );
 }
 

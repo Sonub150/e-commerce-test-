@@ -49,14 +49,11 @@ const Navbar = ({ onMenuToggle }) => {
   ];
 
   const categories = [
-    { name: 'Fashion', icon: '👗', href: '/category/Fashion' },
-    { name: 'Electronics', icon: '��', href: '/category/Electronics' },
-    { name: 'Phones', icon: '📞', href: '/category/Smartphones' },
-    { name: 'Laptops', icon: '��', href: '/category/Laptops' },
-    { name: 'Shoes', icon: '👟', href: '/category/Footwear' },
-    { name: 'Home & Garden', icon: '🏠', href: '/category/Home Appliances' },
-    { name: 'Sports', icon: '⚽', href: '/category/Sports' },
-    { name: 'Beauty', icon: '💄', href: '/category/Beauty & Fashion' },
+    { name: 'Footwear', icon: '👟', href: '/category/Footwear' },
+    { name: 'Smartphones', icon: '📞', href: '/category/Smartphones' },
+    { name: 'Laptops', icon: '💻', href: '/category/Laptops' },
+    { name: 'Home Appliances', icon: '🏠', href: '/category/Home Appliances' },
+    { name: 'Beauty & Fashion', icon: '💄', href: '/category/Beauty & Fashion' },
   ];
 
   const handleSearch = (e) => {

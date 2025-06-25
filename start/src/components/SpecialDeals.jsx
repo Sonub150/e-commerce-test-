@@ -9,10 +9,10 @@ const SpecialDeals = () => {
   const deals = [
     {
       id: 1,
-      title: "Flash Sale",
-      subtitle: "Up to 70% Off",
-      description: "Limited time offer on premium fashion items",
-      category: "Fashion",
+      title: "Footwear Sale",
+      subtitle: "Save $100",
+      description: "Stylish shoes and sneakers at amazing prices",
+      category: "Footwear",
       discount: "70%",
       originalPrice: "$299",
       salePrice: "$89",
@@ -20,14 +20,14 @@ const SpecialDeals = () => {
       icon: <FiZap className="text-yellow-500" />,
       bgGradient: "from-red-500 to-pink-500",
       textColor: "text-white",
-      link: "/category/Fashion"
+      link: "/category/Footwear"
     },
     {
       id: 2,
       title: "Tech Deals",
       subtitle: "Save $200",
       description: "Latest smartphones and laptops at unbeatable prices",
-      category: "Electronics",
+      category: "Smartphones",
       discount: "40%",
       originalPrice: "$999",
       salePrice: "$599",
@@ -35,7 +35,7 @@ const SpecialDeals = () => {
       icon: <FiTrendingUp className="text-blue-500" />,
       bgGradient: "from-blue-500 to-purple-500",
       textColor: "text-white",
-      link: "/category/Electronics"
+      link: "/category/Smartphones"
     },
     {
       id: 3,

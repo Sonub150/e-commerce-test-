@@ -38,7 +38,7 @@ const CategoryProducts = () => {
     
     axios.get(`https://e-commerce-test-2-f4t8.onrender.com/api/products?category=${encodeURIComponent(categoryName)}`)
       .then(res => {
-        const productsData = res.data.data?.products || [];
+        const productsData = res.data.products || [];
         setProducts(productsData);
         setFilteredProducts(productsData);
         setLoading(false);

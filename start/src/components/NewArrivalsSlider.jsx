@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { FiArrowRight, FiArrowLeft, FiStar, FiClock, FiTrendingUp, FiZap } from 'react-icons/fi';
+import { FiArrowRight, FiArrowLeft, FiStar, FiClock, FiTrendingUp, FiZap, FiShoppingCart } from 'react-icons/fi';
+import { useCart } from '../context/CartContext';
 import axios from 'axios';
 
 const NewArrivalsSlider = () => {
@@ -9,13 +10,14 @@ const NewArrivalsSlider = () => {
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [error, setError] = useState(null);
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchNewArrivals = async () => {
       try {
         setLoading(true);
         const response = await axios.get('https://e-commerce-test-2-f4t8.onrender.com/api/products/new-arrivals?limit=8');
-        const productsData = response.data.data?.products || [];
+        const productsData = response.data.data?.products || response.data.products || [];
         setProducts(productsData);
         setLoading(false);
       } catch (err) {
@@ -204,6 +206,12 @@ const NewArrivalsSlider = () => {
                         >
                           View Details
                         </Link>
+                        <button 
+                          onClick={() => addToCart(product)}
+                          className="bg-gradient-to-r from-green-600 to-emerald-600 text-white py-2 px-3 rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-300"
+                        >
+                          <FiShoppingCart className="w-4 h-4" />
+                        </button>
                         <button className="bg-gray-100 text-gray-700 py-2 px-3 rounded-lg hover:bg-gray-200 transition-colors">
                           <FiStar className="w-4 h-4" />
                         </button>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiArrowRight, FiHeart, FiStar, FiShoppingCart, FiEye, FiGift, FiClock, FiZap } from 'react-icons/fi';
+import { useCart } from '../context/CartContext';
 import axios from 'axios';
 
 const SpecialOffersSlider = () => {
@@ -8,14 +9,20 @@ const SpecialOffersSlider = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { addToCart } = useCart();
 
   useEffect(() => {
     setLoading(true);
-    axios.get('https://e-commerce-test-2-f4t8.onrender.com/api/products?category=Footwear')
+    // Fetch all products and filter for those with discounts (Flash Sales & Deals)
+    axios.get('https://e-commerce-test-2-f4t8.onrender.com/api/products')
       .then(res => {
         // Ensure we get an array from the response
-        const productData = Array.isArray(res.data) ? res.data : (res.data.products || []);
-        setProducts(productData);
+        const allProducts = Array.isArray(res.data) ? res.data : (res.data.products || []);
+        // Filter products that have discounts (discountPrice < price)
+        const discountedProducts = allProducts.filter(product => 
+          product.discountPrice && product.discountPrice < product.price
+        );
+        setProducts(discountedProducts);
         setLoading(false);
       })
       .catch(err => {
@@ -46,11 +53,6 @@ const SpecialOffersSlider = () => {
 
   const prevSlide = () => {
     setCurrentIndex((prev) => (prev - 1 + Math.ceil(products.length / 4)) % Math.ceil(products.length / 4));
-  };
-
-  const addToCart = (productId) => {
-    console.log(`Added product ${productId} to cart`);
-    // Add to cart functionality
   };
 
   const addToWishlist = (productId) => {
@@ -197,7 +199,7 @@ const SpecialOffersSlider = () => {
                         whileTap={{ scale: 0.9 }}
                         onClick={(e) => {
                           e.stopPropagation();
-                          addToCart(product._id);
+                          addToCart(product);
                         }}
                         className="bg-white/90 backdrop-blur-sm p-3 rounded-full shadow-lg hover:bg-white transition-all duration-300 cursor-pointer"
                       >
@@ -245,7 +247,7 @@ const SpecialOffersSlider = () => {
                       whileTap={{ scale: 0.98 }}
                       onClick={(e) => {
                         e.stopPropagation();
-                        addToCart(product._id);
+                        addToCart(product);
                       }}
                       className="w-full bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white py-3 px-4 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer"
                     >
