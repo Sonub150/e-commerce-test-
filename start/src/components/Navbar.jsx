@@ -200,7 +200,7 @@ const Navbar = ({ onMenuToggle }) => {
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="Search products, brands, categories..."
-                  className="bg-transparent border-none focus:outline-none w-full px-1 text-gray-700 placeholder-gray-500 text-sm"
+                  className="bg-transparent border-none focus:outline-none focus:ring-0 focus:border-gray-400 w-full px-1 text-gray-700 placeholder-gray-500 text-sm"
                 />
               </form>
             </div>

@@ -23,6 +23,7 @@ import AdminProtectedRoute from './components/AdminProtectedRoute';
 import Address from './pages/Address';
 import OrderSuccess from './pages/OrderSuccess';
 import APITest from './components/APITest';
+import SearchResults from './pages/SearchResults';
 
 function App() {
   const { adminUser } = useAdminAuth();
@@ -45,6 +46,7 @@ function App() {
             <Route path="/address" element={<Address />} />
             <Route path="/order-success" element={<OrderSuccess />} />
             <Route path="/api-test" element={<APITest />} />
+            <Route path='/all-products' element={<SearchResults />} />
 
             {/* Admin Panel Routes */}
             <Route path='/admin/login' element={<AdminLogin />} />

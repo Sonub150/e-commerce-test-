@@ -186,11 +186,21 @@ const HomeSlider = () => {
   // Keyboard navigation
   useEffect(() => {
     const handleKeyPress = (event) => {
+      // Only handle slider keys if not typing in an input, textarea, or contenteditable
+      const active = document.activeElement;
+      const isTyping = active && (
+        active.tagName === 'INPUT' ||
+        active.tagName === 'TEXTAREA' ||
+        active.isContentEditable
+      );
+      if (isTyping) return;
       switch (event.key) {
         case 'ArrowLeft':
+          event.preventDefault();
           prevSlide();
           break;
         case 'ArrowRight':
+          event.preventDefault();
           nextSlide();
           break;
         case ' ':
@@ -198,6 +208,7 @@ const HomeSlider = () => {
           togglePlayPause();
           break;
         case 'Enter':
+          event.preventDefault();
           handleSlideClick(slides[currentSlide]);
           break;
         default:
@@ -205,13 +216,27 @@ const HomeSlider = () => {
       }
     };
 
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
+    // Only add event listener when the slider is focused or visible
+    const handleKeyDown = (event) => {
+      // Check if the slider is in viewport
+      const sliderElement = document.querySelector('.home-slider');
+      if (sliderElement) {
+        const rect = sliderElement.getBoundingClientRect();
+        const isInViewport = rect.top < window.innerHeight && rect.bottom > 0;
+        
+        if (isInViewport) {
+          handleKeyPress(event);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [prevSlide, nextSlide, togglePlayPause, slides, currentSlide]);
 
   return (
     <div 
-      className="relative w-full h-[400px] sm:h-[500px] md:h-[600px] lg:h-[700px] overflow-hidden bg-gradient-to-br from-gray-900 to-black"
+      className="relative w-full h-[400px] sm:h-[500px] md:h-[600px] lg:h-[700px] overflow-hidden bg-gradient-to-br from-gray-900 to-black home-slider"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

@@ -26,6 +26,7 @@ const Cart = () => {
         const products = data.products || [];
         setAvailableProducts(products);
       } catch (err) {
+        console.error('Error fetching products:', err);
         setAvailableProducts([]);
       }
     }
@@ -34,13 +35,23 @@ const Cart = () => {
 
   // Check for invalid cart items (define this BEFORE any useEffect that uses it)
   const hasInvalidCartItems = cart?.cartItems?.some(item => {
+    // If availableProducts is not loaded yet, don't mark items as invalid
+    if (availableProducts.length === 0) {
+      return false;
+    }
+    
     const productId = typeof item.productId === 'object' ? item.productId._id : item.productId;
-    return !availableProducts.some(p => p._id === productId);
+    const isValid = availableProducts.some(p => p._id === productId);
+    return !isValid;
   });
 
   // Calculate subtotal
   const subtotal = cart && cart.cartItems
-    ? cart.cartItems.reduce((sum, item) => sum + (item.productId.price * item.quantity), 0)
+    ? cart.cartItems.reduce((sum, item) => {
+        const product = item.productId;
+        const price = (product && typeof product === 'object' && product.price) || item.price || 0;
+        return sum + (price * item.quantity);
+      }, 0)
     : 0;
 
   // Calculate discount amount
@@ -223,6 +234,7 @@ const Cart = () => {
                 {cart.cartItems.map((item, idx) => {
                   let product = item.productId;
                   let isValid = product && typeof product === 'object' && product._id;
+                  
                   // If not valid by id, try to match by name
                   if (!isValid && product && product.name) {
                     const matchByName = availableProducts.find(p => p.name === product.name);
@@ -231,9 +243,21 @@ const Cart = () => {
                       isValid = true;
                     }
                   }
+                  
+                  // Additional validation: check if product has required fields
+                  if (isValid && (!product.name || !product.price || !product.images)) {
+                    isValid = false;
+                  }
+                  
+                  // Use item price as fallback if product price is not available
+                  const displayPrice = isValid ? product.price : (item.price || 0);
+                  const displayName = isValid ? product.name : 'Product not available';
+                  const displayImage = isValid && product.images?.[0]?.url ? product.images[0].url : null;
+                  const productId = isValid ? product._id : (typeof item.productId === 'object' ? item.productId._id : item.productId);
+                  
                   return (
                     <motion.li 
-                      key={isValid ? product._id : item._id || idx}
+                      key={productId || item._id || idx}
                       variants={itemVariants}
                       initial="hidden"
                       animate="visible"
@@ -242,24 +266,24 @@ const Cart = () => {
                     >
                       <div className="flex flex-col sm:flex-row gap-4 p-4">
                         <div className="relative w-full sm:w-32 h-32 flex-shrink-0">
-                          {isValid ? (
+                          {isValid && displayImage ? (
                             <img 
-                              src={product.images?.[0]?.url} 
-                              alt={product.name} 
+                              src={displayImage} 
+                              alt={displayName} 
                               className="w-full h-full object-cover rounded-lg border-2 border-indigo-100 shadow-sm"
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-gray-100 text-red-500 font-bold text-center rounded-lg border-2 border-red-200">
-                              Product not found or removed from database.
+                            <div className="w-full h-full flex items-center justify-center bg-gray-100 text-red-500 font-bold text-center rounded-lg border-2 border-red-200 text-xs p-2">
+                              {isValid ? 'Image not available' : 'Product not found or removed from database.'}
                             </div>
                           )}
                           {isValid && (
                             <div className="absolute top-2 right-2 bg-white/80 backdrop-blur-sm rounded-full p-1 shadow-sm">
                               <button
-                                onClick={() => removeFromCart(product._id)}
+                                onClick={() => removeFromCart(productId)}
                                 className="text-gray-500 hover:text-red-500 transition-colors p-1"
                                 title="Remove"
-                                disabled={loadingId === product._id}
+                                disabled={loadingId === productId}
                               >
                                 <FiTrash2 size={16} />
                               </button>
@@ -273,10 +297,14 @@ const Cart = () => {
                                 to={`/category/${product.category}`}
                                 className="font-semibold text-lg text-indigo-700 hover:underline mb-1 line-clamp-2 block transition-colors duration-200"
                               >
-                                {product.name}
+                                {displayName}
                               </Link>
-                            ) : null}
-                            {isValid && (
+                            ) : (
+                              <div className="font-semibold text-lg text-red-600 mb-1 line-clamp-2">
+                                {displayName}
+                              </div>
+                            )}
+                            {isValid && product.brand && product.category && (
                               <div className="flex flex-wrap gap-2 mb-2">
                                 <span className="bg-indigo-50 text-indigo-600 text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1">
                                   <FiTag className="inline-block" /> {product.brand}
@@ -286,23 +314,21 @@ const Cart = () => {
                                 </span>
                               </div>
                             )}
-                            {isValid && (
-                              <p className="text-indigo-600 font-medium text-base mb-3">
-                                ${product.price.toFixed(2)}
-                              </p>
-                            )}
+                            <p className={`font-medium text-base mb-3 ${isValid ? 'text-indigo-600' : 'text-red-600'}`}>
+                              ${displayPrice.toFixed(2)}
+                            </p>
                           </div>
                           <div className="flex items-center gap-4">
                             <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-1">
                               <button
                                 onClick={() => handleDecrease(item)}
                                 className={`text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 w-8 h-8 flex items-center justify-center rounded-full transition-colors ${item.quantity === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                disabled={item.quantity === 1 || loadingId === product._id}
+                                disabled={item.quantity === 1 || loadingId === productId}
                               >
                                 <FiMinus size={14} />
                               </button>
                               <span className="font-semibold text-gray-800 w-6 text-center">
-                                {loadingId === product._id ? (
+                                {loadingId === productId ? (
                                   <span className="inline-block w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></span>
                                 ) : (
                                   item.quantity
@@ -311,13 +337,13 @@ const Cart = () => {
                               <button
                                 onClick={() => handleIncrease(item)}
                                 className="text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 w-8 h-8 flex items-center justify-center rounded-full transition-colors"
-                                disabled={loadingId === product._id}
+                                disabled={loadingId === productId}
                               >
                                 <FiPlus size={14} />
                               </button>
                             </div>
                             <div className="font-bold text-lg text-gray-900 w-20 text-right">
-                              ${(product.price * item.quantity).toFixed(2)}
+                              ${(displayPrice * item.quantity).toFixed(2)}
                             </div>
                           </div>
                         </div>

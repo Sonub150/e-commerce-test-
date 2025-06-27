@@ -4,7 +4,7 @@ const Product = require('../models/productmodels');
 // Helper function to get cart
 const getCart = async (userId, guestId) => {
   const query = userId ? { user: userId } : { guestId };
-  return await Cart.findOne(query).populate('cartItems.productId', 'name price discountPrice images countInStock category brand description rating numReviews');
+  return await Cart.findOne(query).populate('cartItems.productId');
 };
 
 const getCartHandler = async (req, res) => {
